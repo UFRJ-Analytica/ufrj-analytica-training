@@ -1,17 +1,30 @@
-# Ignore os arquivos de sistema do Mac
-.DS_store
+# Arquivos de sistema do macOS
+.DS_Store
 
-# Ignore a pasta node_modules
-node_modules
+# Arquivos de sistema do Windows
+Thumbs.db
+Desktop.ini
 
-# Ignore todos os arquivos de texto
-*.txt
+# Ambiente virtual local
+.venv/
+venv/
 
-# Ignore arquivos relacionados às chaves de API
+# Cache e artefatos do Python
+__pycache__/
+*.py[cod]
+
+# Arquivos de configuracao sensiveis
 .env
+.env.*
+.streamlit/secrets.toml
 
-# Ignore arquivos de configuração de SASS
-.sass-cache
+# Ferramentas e caches opcionais de frontend
+node_modules/
+.sass-cache/
 
-# Ignore py cache
-pages/__pycache__
+# Arquivos temporarios de editores
+*.swp
+*.swo
+
+# Logs locais
+*.log
