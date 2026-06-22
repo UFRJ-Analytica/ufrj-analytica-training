@@ -1,0 +1,5 @@
+projeto,status,frente,descricao,responsavel,prioridade,progresso
+Dashboard de Selecao,Em andamento,Produto,Painel inicial para consolidar dados de processo seletivo.,Ana Clara,Alta,65
+Pipeline de Treinamento,Planejado,Engenharia,Estrutura de dados para acompanhar trilhas e progresso dos membros.,Diego Martins,Alta,20
+Radar de Cases,Em andamento,Negocios,Mapeamento de cases internos para estudo dos trainees.,Carla Souza,Media,45
+Repositorio de Estudos,Concluido,Dados,Curadoria de notebooks e materiais para onboarding tecnico.,Bruno Lima,Media,100
