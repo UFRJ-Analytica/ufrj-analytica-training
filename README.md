@@ -14,3 +14,6 @@ streamlit run app.py
 - `pages/1_Equipe.py`: pagina de membros com filtros.
 - `pages/2_Projetos.py`: pagina de projetos com status e progresso.
 - `data/*.csv`: dados de exemplo.
+
+
+# Continue
