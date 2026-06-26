@@ -81,3 +81,4 @@ st.dataframe(
 st.info("Use o menu lateral para navegar entre Equipe e Projetos.")
 
 print("Hello World")
+st.info("Fé no mengo.")
