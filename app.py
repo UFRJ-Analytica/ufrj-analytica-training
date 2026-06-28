@@ -3,7 +3,6 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-
 BASE_DIR = Path(__file__).parent
 DATA_DIR = BASE_DIR / "data"
 
@@ -11,18 +10,15 @@ DATA_DIR = BASE_DIR / "data"
 def load_membros() -> pd.DataFrame:
     return pd.read_csv(DATA_DIR / "membros.csv")
 
-
 @st.cache_data
 def load_projetos() -> pd.DataFrame:
     return pd.read_csv(DATA_DIR / "projetos.csv")
-
 
 st.set_page_config(
     page_title="Analytica Training",
     page_icon=":bar_chart:",
     layout="wide",
 )
-
 
 membros = load_membros()
 projetos = load_projetos()
