@@ -77,7 +77,7 @@ st.dataframe(
     hide_index=True,
 )
 
-st.info("Use o menu lateral para navegar entre Equipe e Projetos.")
+st.info("Use o menu lateral para navegar entre Equipe e Projetos.") 
 
 #Print Hello World
 print("Hello World")
