@@ -38,7 +38,7 @@ col3.metric("Frentes", int(projetos["frente"].nunique()))
 
 st.markdown(
     """
-    ### Objetivo
+    ### Objetivo intro analytica
     Este app organiza a base inicial do programa de treinamento da Analytica.
     A estrutura foi pensada para crescer com paginas de acompanhamento,
     entregas, trilhas e indicadores.
