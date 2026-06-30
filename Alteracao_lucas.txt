@@ -1,2 +1,0 @@
-Alteração feita por Lucas Cont.
-docs: teste de pull request
