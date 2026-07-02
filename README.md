@@ -19,6 +19,7 @@ streamlit run app.py
 - `pages/2_Projetos.py`: pagina de projetos com status e progresso.
 - `data/*.csv`: dados de exemplo.
 
-
+# Continue
 # Contiue
+# Continue
 # Continue
