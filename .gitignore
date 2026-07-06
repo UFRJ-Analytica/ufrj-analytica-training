@@ -28,3 +28,6 @@ node_modules/
 
 # Logs locais
 *.log
+
+#dados do ibge para o BD
+entregaveis/banco_de_dados/data/
