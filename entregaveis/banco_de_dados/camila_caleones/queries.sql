@@ -1,0 +1,2 @@
+-- queries.sql
+-- Consultas SQL obrigatórias.

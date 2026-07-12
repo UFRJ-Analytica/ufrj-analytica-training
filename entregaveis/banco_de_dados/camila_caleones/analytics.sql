@@ -1,0 +1,2 @@
+-- analytics.sql
+-- Consultas analíticas ou uma proposta de camada analítica.
