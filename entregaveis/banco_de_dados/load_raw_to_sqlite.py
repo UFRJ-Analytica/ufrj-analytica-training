@@ -253,6 +253,12 @@ As tabelas com prefixo `raw_` foram carregadas automaticamente a partir dos CSVs
 
 A partir delas, crie o modelo final normalizado.
 """,
+        "schema.sql": """-- schema.sql
+-- Defina aqui a estrutura do banco de dados normalizado.
+""", 
+        "carga.sql": """-- carga.sql
+-- Defina aqui as instruções para carregar os dados das tabelas brutas para as tabelas normalizadas.
+""", 
         "queries.sql": """-- queries.sql
 -- Escreva aqui suas consultas SQL obrigatórias.
 -- Inclua SELECT, JOIN, GROUP BY, INSERT, UPDATE e DELETE.
