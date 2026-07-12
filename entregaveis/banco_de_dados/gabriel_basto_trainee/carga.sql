@@ -37,22 +37,32 @@ SELECT DISTINCT
 FROM raw_municipios
 WHERE id_municipio IS NOT NULL;
 
-INSERT INTO populacao_municipal (
-	id_municipio,
-	ano,
-	indicador,
-	valor,
-	unidade,
-	fonte
+INSERT INTO indicadores (
+    nome_indicador,
+    unidade,
+    fonte
 )
 SELECT DISTINCT
-	id_municipio,
-	ano,
-	indicador,
-	valor,
-	unidade,
-	fonte
+    indicador,
+    unidade,
+    fonte
 FROM raw_populacao_municipal
-WHERE id_municipio IS NOT NULL
-AND ano IS NOT NULL
-AND indicador IS NOT NULL;
+WHERE indicador IS NOT NULL;
+
+INSERT INTO fato_indicador_municipal (
+    id_municipio,
+    id_indicador,
+    ano,
+    valor
+)
+SELECT DISTINCT
+    r.id_municipio,
+    i.id_indicador,
+    r.ano,
+    r.valor
+FROM raw_populacao_municipal r
+JOIN indicadores i
+    ON i.nome_indicador = r.indicador
+   AND (i.unidade = r.unidade OR (i.unidade IS NULL AND r.unidade IS NULL))
+   AND (i.fonte = r.fonte OR (i.fonte IS NULL AND r.fonte IS NULL))
+WHERE r.id_municipio IS NOT NULL;
