@@ -22,7 +22,7 @@ CREATE TABLE estados(
 );
 
 CREATE TABLE municipios(
-	id_municipios INTEGER PRIMARY KEY,
+	id_municipio INTEGER PRIMARY KEY,
 	nome_municipio TEXT NOT NULL,
 	id_uf INTEGER NOT NULL,
 	
