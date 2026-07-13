@@ -1,0 +1,2 @@
+-- carga.sql
+-- Defina aqui as instruções para carregar os dados das tabelas brutas para as tabelas normalizadas.
