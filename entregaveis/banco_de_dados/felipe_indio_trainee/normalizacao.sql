@@ -1,0 +1,9 @@
+-- normalizacao.sql
+-- Crie aqui as tabelas normalizadas e popule a partir das tabelas raw_.
+
+PRAGMA foreign_keys = ON;
+
+-- Exemplo de estrutura esperada:
+-- DROP TABLE IF EXISTS ...
+-- CREATE TABLE ...
+-- INSERT INTO ... SELECT ...
