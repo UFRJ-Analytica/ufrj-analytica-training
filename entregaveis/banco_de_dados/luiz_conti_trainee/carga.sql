@@ -49,7 +49,7 @@ INSERT INTO populacao_municipal  (
 	fonte
 )
 	SELECT DISTINCT
-		id_municipio,
+		id_municipio, 
 		ano,
 		indicador,
 		valor,
