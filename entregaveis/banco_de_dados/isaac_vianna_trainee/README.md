@@ -68,7 +68,7 @@ python load_raw_to_sqlite.py --name "Isaac Vianna"
 
 > `schema.sql` usa `DROP TABLE IF EXISTS` apenas nas tabelas **finais**; as `raw_`
 > nunca são apagadas. Ative `PRAGMA foreign_keys = ON;` na conexão para que as FKs
-> sejam checadas (já incluído no início de cada arquivo `.sql`).
+> sejam checadas (já incluído no início de `schema.sql` e `carga.sql`).
 
 ## Arquivos da entrega
 
@@ -83,27 +83,32 @@ python load_raw_to_sqlite.py --name "Isaac Vianna"
 
 ### `queries.sql` (10 consultas)
 
-1. Todas as regiões cadastradas.
-2. Estados de uma região escolhida (Sudeste).
-3. Municípios de uma UF escolhida (RJ).
-4. Município com seu estado e região (join encadeado).
-5. População estimada por município, com UF e região.
-6. Quantidade de municípios por estado.
-7. Quantidade de municípios por região.
-8. População total estimada por estado.
-9. Top 10 estados por quantidade de municípios.
-10. Tabela auxiliar `teste_operacoes` demonstrando `INSERT`, `UPDATE` e `DELETE`
-    sem alterar as tabelas finais do modelo.
+Cada consulta é precedida de um comentário `-- N. <pergunta>` com a pergunta que
+ela responde:
+
+1. Quais regiões existem na base?
+2. Quais estados pertencem a uma região escolhida? (Sudeste)
+3. Quais municípios pertencem a uma UF escolhida? (RJ)
+4. Qual é o estado e a região de cada município?
+5. Qual é a população estimada dos municípios, mostrando município, UF, região, ano e valor?
+6. Quantos municípios existem por estado?
+7. Quantos municípios existem por região?
+8. Qual é a população total estimada por estado?
+9. Quais estados possuem uma quantidade elevada de municípios (Top 10 Estados)?
+10. Tabela `teste_operacoes` com uma inserção, uma alteração e uma remoção de
+    registro, sem alterar as tabelas finais do modelo.
 
 ### `analytics.sql` (6 consultas)
 
-1. Ranking dos 10 municípios mais populosos do país (`RANK() OVER`).
-2. População total por região.
-3. População média dos municípios por estado.
-4. Municípios com população acima da média nacional (subconsulta).
-5. Classificação por porte (`CASE`: pequeno / médio / grande) e contagem por região.
-6. Camada analítica: `VIEW vw_populacao_por_regiao` com a participação percentual
-   de cada região na população nacional.
+Mesmo padrão de comentário, uma pergunta analítica por consulta:
+
+1. Quais são os municípios mais populosos da base? (`RANK() OVER`)
+2. Qual é a população total estimada por região?
+3. Qual é a população média dos municípios por estado?
+4. Quais municípios possuem população acima da média nacional dos municípios? (subconsulta)
+5. Quantos municípios pequenos, médios e grandes existem por região? (`CASE`)
+6. Qual região concentra a maior população estimada? (`VIEW vw_populacao_por_regiao`
+   com participação percentual de cada região)
 
 **Alguns achados:** o Sudeste concentra ~41,6% da população nacional, seguido pelo
 Nordeste (~26,8%); São Paulo é o município mais populoso do país (~11,9 milhões),

@@ -1,9 +1,4 @@
--- analytics.sql
--- Consultas analiticas: rankings, agregacoes, classificacao e camada analitica (view).
-
-PRAGMA foreign_keys = ON;
-
--- 1. Ranking dos 10 municipios mais populosos do pais.
+-- 1. Quais são os municípios mais populosos da base?
 SELECT
     m.nome_municipio,
     e.sigla_uf,
@@ -15,7 +10,7 @@ JOIN estados e ON e.id_uf = m.id_uf
 ORDER BY p.valor DESC
 LIMIT 10;
 
--- 2. Populacao total estimada por regiao.
+-- 2. Qual é a população total estimada por região?
 SELECT
     r.nome_regiao,
     SUM(p.valor) AS populacao_total
@@ -26,7 +21,7 @@ JOIN regioes r ON r.id_regiao = e.id_regiao
 GROUP BY r.id_regiao, r.nome_regiao
 ORDER BY populacao_total DESC;
 
--- 3. Populacao media dos municipios por estado.
+-- 3. Qual é a população média dos municípios por estado?
 SELECT
     e.sigla_uf,
     e.nome_uf,
@@ -38,7 +33,7 @@ JOIN estados e ON e.id_uf = m.id_uf
 GROUP BY e.id_uf, e.sigla_uf, e.nome_uf
 ORDER BY populacao_media_municipio DESC;
 
--- 4. Municipios com populacao acima da media nacional (subconsulta).
+-- 4. Quais municípios possuem população acima da média nacional dos municípios?
 SELECT
     m.nome_municipio,
     e.sigla_uf,
@@ -49,7 +44,7 @@ JOIN estados e ON e.id_uf = m.id_uf
 WHERE p.valor > (SELECT AVG(valor) FROM populacao_municipal)
 ORDER BY p.valor DESC;
 
--- 5. Classificacao dos municipios por porte populacional e contagem por regiao.
+-- 5. Quantos municípios pequenos, médios e grandes existem por região?
 SELECT
     r.nome_regiao,
     CASE
@@ -65,8 +60,7 @@ JOIN regioes r ON r.id_regiao = e.id_regiao
 GROUP BY r.nome_regiao, porte
 ORDER BY r.nome_regiao, porte;
 
--- 6. Camada analitica: view com a participacao percentual de cada regiao
---    na populacao nacional.
+-- 6. Qual região concentra a maior população estimada?
 DROP VIEW IF EXISTS vw_populacao_por_regiao;
 
 CREATE VIEW vw_populacao_por_regiao AS

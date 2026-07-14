@@ -1,29 +1,23 @@
--- queries.sql
--- Consultas obrigatorias sobre o modelo normalizado.
--- Cobre SELECT, WHERE, JOIN, GROUP BY, INSERT, UPDATE e DELETE.
-
-PRAGMA foreign_keys = ON;
-
--- 1. Todas as regioes cadastradas.
+-- 1. Quais regiões existem na base?
 SELECT id_regiao, sigla_regiao, nome_regiao
 FROM regioes
 ORDER BY nome_regiao;
 
--- 2. Estados de uma regiao especifica (Sudeste).
+-- 2. Quais estados pertencem a uma região escolhida?
 SELECT e.id_uf, e.sigla_uf, e.nome_uf
 FROM estados e
 JOIN regioes r ON r.id_regiao = e.id_regiao
 WHERE r.nome_regiao = 'Sudeste'
 ORDER BY e.nome_uf;
 
--- 3. Municipios de uma UF especifica (Rio de Janeiro).
+-- 3. Quais municípios pertencem a uma UF escolhida?
 SELECT m.id_municipio, m.nome_municipio
 FROM municipios m
 JOIN estados e ON e.id_uf = m.id_uf
 WHERE e.sigla_uf = 'RJ'
 ORDER BY m.nome_municipio;
 
--- 4. Estado e regiao de cada municipio (join encadeado municipio -> estado -> regiao).
+-- 4. Qual é o estado e a região de cada município?
 SELECT
     m.nome_municipio,
     e.sigla_uf,
@@ -31,10 +25,9 @@ SELECT
 FROM municipios m
 JOIN estados e ON e.id_uf = m.id_uf
 JOIN regioes r ON r.id_regiao = e.id_regiao
-ORDER BY m.nome_municipio
-LIMIT 20;
+ORDER BY m.nome_municipio;
 
--- 5. Populacao estimada dos municipios, com UF e regiao.
+-- 5. Qual é a população estimada dos municípios, mostrando município, UF, região, ano e valor?
 SELECT
     m.nome_municipio,
     e.sigla_uf,
@@ -45,10 +38,9 @@ FROM populacao_municipal p
 JOIN municipios m ON m.id_municipio = p.id_municipio
 JOIN estados e ON e.id_uf = m.id_uf
 JOIN regioes r ON r.id_regiao = e.id_regiao
-ORDER BY p.valor DESC
-LIMIT 20;
+ORDER BY p.valor DESC;
 
--- 6. Quantidade de municipios por estado.
+-- 6. Quantos municípios existem por estado?
 SELECT
     e.sigla_uf,
     e.nome_uf,
@@ -58,7 +50,7 @@ LEFT JOIN municipios m ON m.id_uf = e.id_uf
 GROUP BY e.id_uf, e.sigla_uf, e.nome_uf
 ORDER BY qtd_municipios DESC;
 
--- 7. Quantidade de municipios por regiao.
+-- 7. Quantos municípios existem por região?
 SELECT
     r.nome_regiao,
     COUNT(m.id_municipio) AS qtd_municipios
@@ -68,7 +60,7 @@ JOIN municipios m ON m.id_uf = e.id_uf
 GROUP BY r.id_regiao, r.nome_regiao
 ORDER BY qtd_municipios DESC;
 
--- 8. Populacao total estimada por estado.
+-- 8. Qual é a população total estimada por estado?
 SELECT
     e.sigla_uf,
     e.nome_uf,
@@ -79,7 +71,7 @@ JOIN estados e ON e.id_uf = m.id_uf
 GROUP BY e.id_uf, e.sigla_uf, e.nome_uf
 ORDER BY populacao_total DESC;
 
--- 9. Top 10 estados por quantidade de municipios.
+-- 9. Quais estados possuem uma quantidade elevada de municípios (Top 10 Estados)?
 SELECT
     e.sigla_uf,
     e.nome_uf,
@@ -90,8 +82,7 @@ GROUP BY e.id_uf, e.sigla_uf, e.nome_uf
 ORDER BY qtd_municipios DESC
 LIMIT 10;
 
--- 10. Demonstracao de INSERT, UPDATE e DELETE em uma tabela auxiliar de teste,
---     sem tocar nas tabelas finais do modelo.
+-- 10. Crie uma tabela simples de teste e registre uma inserção, uma alteração e uma remoção de registro nessa tabela.
 DROP TABLE IF EXISTS teste_operacoes;
 
 CREATE TABLE teste_operacoes (
