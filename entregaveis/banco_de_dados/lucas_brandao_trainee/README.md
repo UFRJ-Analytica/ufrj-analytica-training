@@ -1,19 +1,10 @@
-# Entrega Banco de Dados 1 - Lucas Brandao
+# Entrega de Banco de Dados - Lucas Brandão
 
-## Objetivo
+Este repositório contém os arquivos referentes à modelagem e análise de dados do banco `database.db`.
 
-Transformar as tabelas brutas `raw_` em um modelo relacional normalizado.
-
-## Arquivos da entrega
-
-- `database.db`: banco SQLite com dados brutos e tabelas criadas.
-- `normalizacao.sql`: criação e população das tabelas normalizadas.
-- `queries.sql`: consultas SQL obrigatórias.
-- `analytics.sql`: consultas analíticas ou proposta de camada analítica.
-- `modelo_logico.png`: imagem do modelo lógico feito no DBeaver.
-
-## Dados brutos
-
-As tabelas com prefixo `raw_` foram carregadas automaticamente a partir dos CSVs gerados com dados reais do IBGE.
-
-A partir delas, crie o modelo final normalizado.
+## Conteúdo
+- `schema.sql`: Estrutura do banco de dados (tabelas normalizadas).
+- `carga.sql`: Script de migração dos dados das tabelas `raw_` para as tabelas normalizadas.
+- `queries.sql`: Consultas de exploração e validação.
+- `analytics.sql`: Consultas analíticas para interpretação dos dados.
+- `modelo_logico.png`: Diagrama das tabelas do banco.
