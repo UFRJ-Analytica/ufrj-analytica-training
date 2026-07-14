@@ -40,20 +40,30 @@ INSERT INTO municipios (
 	FROM raw_municipios
 	WHERE id_uf IS NOT NULL AND id_municipio IS NOT NULL;
 	
-INSERT INTO populacao_municipal  (
+INSERT INTO indicadores (
+	nome_indicador,
+	unidade
+)
+	SELECT DISTINCT
+		indicador,
+		unidade
+	FROM raw_populacao_municipal
+	WHERE indicador IS NOT NULL;
+
+INSERT INTO fato_indicador_municipal (
 	id_municipio,
+	id_indicador,
 	ano,
-	indicador,
 	valor,
-	unidade,
 	fonte
 )
 	SELECT DISTINCT
-		id_municipio, 
-		ano,
-		indicador,
-		valor,
-		unidade,
-		fonte
-	FROM raw_populacao_municipal
-	WHERE ano IS NOT NULL AND id_municipio IS NOT NULL;
+		p.id_municipio,
+		i.id_indicador,
+		p.ano,
+		p.valor,
+		p.fonte
+	FROM raw_populacao_municipal p
+	INNER JOIN indicadores i ON i.nome_indicador = p.indicador AND i.unidade = p.unidade
+	WHERE p.ano IS NOT NULL AND p.id_municipio IS NOT NULL;
+
