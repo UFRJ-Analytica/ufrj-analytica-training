@@ -1,0 +1,3 @@
+-- queries.sql
+-- Escreva aqui suas consultas SQL obrigatórias.
+-- Inclua SELECT, JOIN, GROUP BY, INSERT, UPDATE e DELETE.

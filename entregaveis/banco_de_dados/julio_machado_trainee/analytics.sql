@@ -1,0 +1,3 @@
+-- analytics.sql
+-- Escreva aqui consultas analíticas ou uma proposta de camada analítica.
+-- Exemplos: rankings, agregações por região/UF, views, tabela fato/dimensões.
