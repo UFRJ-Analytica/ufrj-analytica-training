@@ -1,9 +1,41 @@
 -- schema.sql
 -- Defina aqui a estrutura do banco de dados normalizado.
 
--- O arquivo schema.sql deve conter a estrutura do modelo relacional normalizado. Ele deve criar as tabelas finais,  definir tipos de dados, chaves primárias e chaves estrangeiras. 
--- ● Crie tabelas finais separando informações repetidas das tabelas raw_. 
--- ● Use PRIMARY KEY para identificar unicamente cada linha. 
--- ● Use FOREIGN KEY para representar relacionamentos entre tabelas. 
--- ● Use DROP TABLE IF EXISTS apenas para tabelas finais, permitindo rodar o script novamente. 
--- ● Não apague as tabelas raw_.
+PRAGMA foreign_keys = ON;
+
+DROP TABLE IF EXISTS populacao_municipal; 
+DROP TABLE IF EXISTS municipios; 
+DROP TABLE IF EXISTS estados; 
+DROP TABLE IF EXISTS regioes; 
+
+CREATE TABLE regioes ( 
+id_regiao BIGINT PRIMARY KEY, 
+sigla_regiao TEXT NOT NULL, 
+nome_regiao TEXT NOT NULL 
+); 
+
+CREATE TABLE estados (
+id_uf BIGINT PRIMARY KEY,
+sigla_uf TEXT NOT NULL,
+nome_uf TEXT NOT NULL,
+id_regiao BIGINT NOT NULL,
+FOREIGN KEY (id_regiao) REFERENCES regioes(id_regiao)
+);
+
+CREATE TABLE municipios (
+id_municipio BIGINT PRIMARY KEY,
+nome_municipio TEXT NOT NULL,
+id_uf BIGINT NOT NULL,
+FOREIGN KEY (id_uf) REFERENCES estados(id_uf)
+);
+
+CREATE TABLE populacao_municipal (
+id_municipio BIGINT NOT NULL,
+ano BIGINT NOT NULL,
+valor FLOAT NOT NULL,
+indicador TEXT NOT NULL,
+unidade TEXT NOT NULL,
+fonte TEXT NOT NULL,
+PRIMARY KEY (id_municipio)
+FOREIGN KEY (id_municipio) REFERENCES municipios(id_municipio)
+)
