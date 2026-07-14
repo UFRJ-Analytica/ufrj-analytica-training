@@ -62,7 +62,7 @@ from sqlalchemy import create_engine, text
 # Troque pelo seu nome.
 # Exemplo:
 # TRAINEE_NAME = "Lucas Passos"
-TRAINEE_NAME = "COLOQUE_SEU_NOME_AQUI"
+TRAINEE_NAME = "Julia Vilela"
 
 
 # =========================================================
