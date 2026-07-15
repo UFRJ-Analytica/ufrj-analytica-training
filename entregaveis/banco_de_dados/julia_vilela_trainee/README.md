@@ -7,7 +7,8 @@ Transformar as tabelas brutas `raw_` em um modelo relacional normalizado.
 ## Arquivos da entrega
 
 - `database.db`: banco SQLite com dados brutos e tabelas criadas.
-- `normalizacao.sql`: criação e população das tabelas normalizadas.
+- `schema.sql`: criação das tabelas normalizadas.
+- `carga.sql`: população das tabelas normalizadas.
 - `queries.sql`: consultas SQL obrigatórias.
 - `analytics.sql`: consultas analíticas ou proposta de camada analítica.
 - `modelo_logico.png`: imagem do modelo lógico feito no DBeaver.
