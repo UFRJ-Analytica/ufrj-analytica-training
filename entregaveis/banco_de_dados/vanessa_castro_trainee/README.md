@@ -16,4 +16,4 @@ Transformar as tabelas brutas `raw_` em um modelo relacional normalizado.
 
 As tabelas com prefixo `raw_` foram carregadas automaticamente a partir dos CSVs gerados com dados reais do IBGE.
 
-A partir delas, crie o modelo final normalizado.
+
