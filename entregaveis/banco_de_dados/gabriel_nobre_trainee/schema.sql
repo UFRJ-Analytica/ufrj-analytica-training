@@ -1,7 +1,8 @@
 -- schema.sql
 PRAGMA foreign_keys = ON;
 
-DROP TABLE IF EXISTS populacao_municipal;
+DROP TABLE IF EXISTS fato_indicador_municipal;
+DROP TABLE IF EXISTS indicadores;
 DROP TABLE IF EXISTS municipios;
 DROP TABLE IF EXISTS estados;
 DROP TABLE IF EXISTS regioes;
@@ -28,13 +29,18 @@ CREATE TABLE municipios (
 
 );
 
-CREATE TABLE populacao_municipal (
-    id_municipio BIGINT REFERENCES municipios(id_municipio),
-    ano BIGINT NOT NULL,
-    indicador TEXT NOT NULL,
-    valor FLOAT NOT NULL,
+CREATE TABLE indicadores (
+    indicador TEXT PRIMARY KEY,
     unidade TEXT NOT NULL,
-    fonte TEXT NOT NULL,
-    PRIMARY KEY (id_municipio, ano, indicador)
+    fonte TEXT NOT NULL
+
+);
+
+CREATE TABLE fato_indicador_municipal (
+id_municipio BIGINT REFERENCES municipios(id_municipio),
+valor FLOAT NOT NULL,
+indicador TEXT REFERENCES indicadores(indicador),
+ano INT NOT NULL,
+PRIMARY KEY (id_municipio, ano, indicador)
 
 );
