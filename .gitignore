@@ -29,5 +29,8 @@ node_modules/
 # Logs locais
 *.log
 
+# Arquivos de configuracao do VS Code
+.vscode/
+
 #dados do ibge para o BD
 entregaveis/banco_de_dados/data/
