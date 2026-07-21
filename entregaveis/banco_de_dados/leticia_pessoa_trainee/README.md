@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Transformar as tabelas brutas `raw_` em um modelo relacional normalizado.
+Transformar as tabelas brutas `raw_` em um modelo relacional normalizado e propor uma camada analítica sobre esse modelo.
 
 ## Arquivos da entrega
 
@@ -26,42 +26,67 @@ As tabelas com prefixo `raw_` foram carregadas automaticamente a partir dos CSVs
 
 4. **`populacao`**: Tabela associativa que guarda o histórico demográfico de acordo com o ano. Foi definida uma **chave primária composta** (`id_municipio`,`ano`), garantindo que um mesmo munícipio não tenha duas contagens conflitantes no mesmo ano. Embora o arquivo `raw` só possua registros de um ano, essa estrutura já permite inclusão de outros anos no futuro sem alterar o schema.
 
-O arquivo `queries.sql` cobre as duas exigências do enunciado: consultas de leitura com `SELECT`/`JOIN`/`GROUP BY`, e o ciclo completo de `INSERT`/`UPDATE`/`DELETE`.
+## Consultas obrigatórias (`queries.sql`)
  
-### Consultas de agregação (SELECT, JOIN, GROUP BY)
+O arquivo cobre as duas exigências do enunciado: consultas de leitura com `SELECT`/`JOIN`/`GROUP BY` (1 a 9), e o ciclo completo de `INSERT`/`UPDATE`/`DELETE` (10).
  
-As três primeiras consultas partem diretamente das tabelas normalizadas (e não da view analítica, que só é criada em `analytics.sql`):
+### Consultas de leitura (1 a 9)
  
-1. **População total por estado** — encadeia `estados → municipios → populacao` e agrupa por `id_uf`, mostrando quanta gente vive em cada UF.
-2. **População total por região** — estende o encadeamento até `regioes`, um nível acima do estado, respondendo à mesma pergunta em uma granularidade maior.
-3. **Média populacional dos municípios por estado** — usa `AVG()` sobre o mesmo agrupamento, mostrando o "tamanho típico" de município em cada estado (útil para perceber, por exemplo, que um estado pode ter população total alta mas municípios pequenos, se a população estiver concentrada em poucas cidades).
+As consultas percorrem a hierarquia geográfica de forma progressiva — primeiro isoladas, depois combinadas — para demonstrar `JOIN`s em diferentes profundidades:
  
-### CRUD
- 
-O `INSERT`/`UPDATE`/`DELETE` usam o mesmo registro (população de 2026 do Rio de Janeiro) para demonstrar o ciclo de vida completo de um dado na tabela `populacao`, aproveitando a chave primária composta (`id_municipio`, `ano`) para garantir que a operação afete exatamente uma linha, sem risco de alterar registros de outros anos ou municípios.
+1. **Regiões existentes na base** — leitura direta de `regioes`, sem `JOIN`, serve de ponto de partida.
+2. **Estados de uma região escolhida** — primeiro `JOIN` da cadeia (`estados` + `regioes`), filtrado por `nome_regiao`.
+3. **Municípios de uma UF escolhida** — mesmo padrão, um nível abaixo (`municipios` + `estados`), filtrado por `sigla_uf`.
+4. **Estado e região de cada município** — encadeia os dois `JOIN`s anteriores em uma única consulta, sem filtro, mostrando a hierarquia completa por município.
+5. **População de cada município (município, UF, região, ano, valor)** — estende a consulta 4 até `populacao`, chegando à granularidade mais fina do modelo.
+6. **Quantidade de municípios por estado** — primeira consulta com `GROUP BY` + `COUNT`, respondendo "quantos municípios tem cada UF".
+7. **Quantidade de municípios por região** — mesma lógica da 6, um nível de agregação acima.
+8. **População total por estado** — troca `COUNT` por `SUM(valor_populacao)`, agregando o histórico demográfico por UF.
+9. **Top 10 estados com mais municípios** — reaproveita a consulta 6, ordenando por `qtd_municipios` e aplicando `LIMIT 10`.
 
+### CRUD (10): Create | Read | Update | Delete
+ 
+Em vez de inserir/alterar/remover diretamente na tabela `populacao` (que guarda os dados reais usados nas análises), o CRUD é demonstrado em uma tabela descartável, criada e destruída dentro do próprio script.
 
 ## Decisões da Camada Analítica (`analytics.sql`)
+
+ A camada analítica foi pensada como uma **segunda camada, construída em cima do modelo normalizado**, focando em torná-los fáceis de consultar para responder perguntas de pesquisa. Todas as 8 análises partem de `vw_resumo_demografico`, em vez de repetir os `JOIN`s entre `regioes`, `estados`, `municipios` e `populacao` em cada uma. Se a hierarquia geográfica mudar um dia, só a view precisa ser ajustada.
  
-### 1. View de resumo demográfico (`vw_resumo_demografico`)
+### View de resumo demográfico (`vw_resumo_demografico`)
  
-Uma view "larga", que já resolve todos os `JOIN`s entre `regioes`, `estados`, `municipios` e `populacao`. Sem a view, qualquer análise nova precisaria repetir os mesmos três `JOIN`s. Com ela, qualquer consulta futura vira um simples `SELECT ... FROM vw_resumo_demografico WHERE ...`, reduzindo repetição de código e risco de erro.
+Resolve todos os `JOIN`s da hierarquia geográfica e adiciona um filtro: `WHERE pop.ano = (SELECT MAX(ano) FROM populacao)`. Essa cláusula garante que a view sempre reflita o **ano mais recente disponível**, mesmo que a tabela `populacao` seja atualizada no futuro com múltiplos anos.
  
-### 2. Ranking dos 10 municípios mais populosos
+### 1. Top 10 municípios mais populosos
  
-Usa `ORDER BY ... LIMIT 10`, a estrutura mais direta para "top N" quando não é necessário saber a posição exata de cada item, só o conjunto dos maiores.
+`ORDER BY ... LIMIT 10` sobre a view — a forma mais direta de responder "quais os maiores", sem precisar da posição exata de cada um.
  
-### 3. Top 3 municípios por estado
+### 2. Top 3 municípios por UF
  
-Usa uma função de janela (`RANK() OVER (PARTITION BY sigla_uf ORDER BY valor_populacao DESC)`). A escolha de `RANK()` (em vez de `ROW_NUMBER()`) foi pensada para caso dois municípios empatem em população, ambos devem aparecer com a mesma posição, em vez de um "furar a fila" do outro artificialmente. O uso de `PARTITION BY` é o que garante que a contagem reinicie em cada estado, permitindo comparar municípios apenas dentro do seu próprio contexto estadual.
+Função de janela `RANK() OVER (PARTITION BY sigla_uf ORDER BY valor_populacao DESC)`. `RANK()` foi escolhido em vez de `ROW_NUMBER()` para que municípios empatados em população dividam a mesma posição. `PARTITION BY` reinicia a contagem a cada UF, respondendo a uma pergunta que um `GROUP BY` simples não conseguiria, pois colapsaria os municípios em uma única linha por estado.
  
-### 4. Concentração populacional (curva acumulada)
+### 3. Concentração populacional (curva acumulada)
  
-Usa `SUM() OVER (ORDER BY valor_populacao DESC)` para calcular quanto da população nacional está concentrada nos municípios mais populosos, em ordem decrescente. Essa análise foi incluída porque evidencia visualmente a desigualdade na distribuição populacional brasileira, algo que uma média simples não revela.
+`SUM() OVER (ORDER BY valor_populacao DESC)` calcula quanto da população nacional está concentrada nos municípios mais populosos. Evidencia a desigualdade na distribuição populacional brasileira, algo que uma média simples não revela.
  
-### 5. Estados acima de um limiar populacional
+### 4. Estados com população acima de um limiar
  
-Usa `GROUP BY` + `HAVING`, para filtrar grupos *depois* da agregação (diferente do `WHERE`, que filtraria linhas antes de agrupar). Foi incluída para demonstrar a diferença entre filtrar dados brutos e filtrar resultados agregados.
+`GROUP BY` + `HAVING`, filtrando grupos *depois* da agregação (diferente do `WHERE`, que filtraria linhas antes de agrupar) — só é possível saber a população total de um estado depois de somar seus municípios.
+ 
+### 5. População total por região
+ 
+`GROUP BY nome_regiao` + `SUM`, mesma lógica da consulta 4 de `queries.sql`, mas agora a partir da view já filtrada pelo último ano, e em um nível de agregação acima (região em vez de estado).
+ 
+### 6. Média populacional dos municípios por estado
+ 
+`AVG(valor_populacao)` agrupado por estado, mostra o "tamanho típico" de município em cada UF, revelando estados com população total alta mas concentrada em poucas cidades grandes.
+ 
+### 7. Municípios acima da média nacional
+ 
+Usa uma subconsulta (`WHERE valor_populacao > (SELECT AVG(valor_populacao) FROM vw_resumo_demografico)`) para comparar cada município a um valor de referência calculado sobre toda a base, uma forma de identificar outliers sem precisar definir manualmente um limite fixo.
+ 
+### 8. Classificação por porte populacional
+ 
+`CASE WHEN` cria faixas de porte (Pequeno, Médio, Grande, Metrópole) que não existem como coluna na base, e `GROUP BY` sobre essa expressão calculada mostra quantos municípios — e quanta população — cada faixa concentra. Revela, tipicamente, que a maioria dos municípios brasileiros é pequena, mas a maior parte da população vive em poucas cidades grandes.
 
 ## Como reproduzir
  
@@ -72,4 +97,6 @@ sqlite3 database.db < queries.sql
 sqlite3 database.db < analytics.sql
 ```
  
-Os scripts são reexecutáveis: `schema.sql` usa `DROP TABLE IF EXISTS` antes de criar cada tabela, e `analytics.sql` usa `DROP VIEW IF EXISTS` antes de criar a view, então rodar tudo novamente não gera erro de "tabela/view já existe".
+Os scripts são reexecutáveis: `schema.sql` usa `DROP TABLE IF EXISTS` antes de criar cada tabela, e `analytics.sql` usa `DROP VIEW IF EXISTS` antes de criar a view, então rodar tudo novamente não gera erro de "tabela/view já existe", e o CRUD de `queries.sql` limpa a própria tabela de teste ao final — então rodar tudo novamente não gera erro de "tabela/view já existe" nem deixa dados residuais.
+ 
+
