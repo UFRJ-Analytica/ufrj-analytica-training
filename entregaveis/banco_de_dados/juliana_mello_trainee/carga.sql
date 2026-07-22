@@ -8,13 +8,13 @@ PRAGMA foreign_keys = ON;
 /*
 	 Modelo:
 	 
- INSERT INTO tabela que criei (
+INSERT INTO tabela que criei (
 	[tudo que tem nela]
 )
 SELECT DISTINCT
 	[tudo que tem nela e na raw]
 FROM tabela raw
-WHERE primary key IS NOT NULL
+WHERE primary key IS NOT NULL and foreign key IS NOT NULL;
 
 */
 
