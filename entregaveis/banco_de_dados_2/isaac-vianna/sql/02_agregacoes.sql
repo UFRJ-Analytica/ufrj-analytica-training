@@ -1,4 +1,3 @@
--- ============================================================================
 -- AGREGAÇÃO ANALÍTICA — variação diária de probabilidade e razão de volume
 -- market_id = 507286 ("Will Aston Villa win the UEFA Champions League?")
 --
@@ -10,7 +9,7 @@
 --    misturar WINDOW/QUALIFY inline e mantém a query legível.
 --  - Sem SELECT *; datas literais não são necessárias aqui pois filtramos
 --    por market_id (mercado fechado, dataset estático) — favorece cache.
--- ============================================================================
+
 WITH serie AS (
   SELECT
     market_id,

@@ -1,4 +1,3 @@
--- ============================================================================
 -- ALERTA 1 — Salto de probabilidade confirmado por liquidez
 -- Mercado: "Will Aston Villa win the UEFA Champions League?" (market_id 507286)
 --
@@ -11,7 +10,7 @@
 --
 -- Otimização: view agregada v_market_daily (MB, não GB); LAG declarado em CTE
 -- e filtrado com WHERE simples no bloco externo; sem SELECT *.
--- ============================================================================
+
 WITH serie AS (
   SELECT
     market_id,

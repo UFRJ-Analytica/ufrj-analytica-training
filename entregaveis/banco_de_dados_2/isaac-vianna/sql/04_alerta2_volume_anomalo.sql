@@ -1,4 +1,3 @@
--- ============================================================================
 -- ALERTA 2 — Volume anômalo (Rolling Window de 7 dias)
 -- Mercado: "Will Aston Villa win the UEFA Champions League?" (market_id 507286)
 --
@@ -12,7 +11,7 @@
 --
 -- Otimização: view agregada v_market_daily; sem SELECT *; sem funções voláteis
 -- de data (mercado fechado, dataset estático — favorece cache de resultados).
--- ============================================================================
+
 WITH serie AS (
   SELECT
     market_id,
