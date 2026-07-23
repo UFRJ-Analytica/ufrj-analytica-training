@@ -37,12 +37,20 @@ app.add_middleware(
 
 
 def incluir_endpoints_dos_trainees() -> None:
-    """Importa automaticamente routers criados em app/endpoints/*.py."""
+    """Importa automaticamente rotas criadas em app/endpoints/*.py."""
     for module_info in pkgutil.iter_modules(endpoints.__path__):
         module = importlib.import_module(f"app.endpoints.{module_info.name}")
+
         router = getattr(module, "router", None)
         if router is not None:
             app.include_router(router)
+            continue
+
+        trainee_app = getattr(module, "app", None)
+        if isinstance(trainee_app, FastAPI):
+            for route in trainee_app.router.routes:
+                if route.path not in {"/openapi.json", "/docs", "/docs/oauth2-redirect", "/redoc"}:
+                    app.router.routes.append(route)
 
 
 incluir_endpoints_dos_trainees()
