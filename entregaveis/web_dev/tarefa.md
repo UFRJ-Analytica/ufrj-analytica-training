@@ -106,11 +106,10 @@ Não acessem o banco direto pelo Streamlit. Toda comunicação passa pela API, v
 Terminal 1, a API:
 
 ```bash
-cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
+python -m venv backend/venv
+source backend/venv/bin/activate
+pip install -r backend/requirements.txt
+uvicorn app.main:app --reload --app-dir backend
 ```
 
 Documentação em `http://127.0.0.1:8000/docs`.
