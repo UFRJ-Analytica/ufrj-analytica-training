@@ -14,3 +14,6 @@ O período inicial do governo de Trump:
 2025-01-01 até 2025-02-28.
 ## Descrição SQL e alertas
 Usei queries de agregação para volume de trades, probabilidade implícita, spread diário de preço e desvio padrão de preço. Os alertas se basearam em Z-Scores e uma lógica de mudança de fluxo para um dado caso específico ('No'), e foram validados usando o próprio mercado, mas por um período extendido (além dos períodos iniciais do governo de Trump).
+
+# Link google drive dados
+https://drive.google.com/drive/folders/1UR5-YY_RPeMw5g3zA-I6nH4zwyceoNq5?usp=sharing
