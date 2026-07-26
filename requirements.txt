@@ -1,2 +1,6 @@
 streamlit>=1.36
-pandas>=2.2
+pandas>=2.2   
+requests
+pandas
+plotly
+fastapi

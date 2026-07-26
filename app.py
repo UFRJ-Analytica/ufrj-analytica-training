@@ -3,27 +3,22 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-
 BASE_DIR = Path(__file__).parent
 DATA_DIR = BASE_DIR / "data"
-
 
 @st.cache_data
 def load_membros() -> pd.DataFrame:
     return pd.read_csv(DATA_DIR / "membros.csv")
 
-
 @st.cache_data
 def load_projetos() -> pd.DataFrame:
     return pd.read_csv(DATA_DIR / "projetos.csv")
-
 
 st.set_page_config(
     page_title="Analytica Training",
     page_icon=":bar_chart:",
     layout="wide",
 )
-
 
 membros = load_membros()
 projetos = load_projetos()
@@ -38,7 +33,7 @@ col3.metric("Frentes", int(projetos["frente"].nunique()))
 
 st.markdown(
     """
-    ### Objetivo
+    ### Objetivo intro analytica
     Este app organiza a base inicial do programa de treinamento da Analytica.
     A estrutura foi pensada para crescer com paginas de acompanhamento,
     entregas, trilhas e indicadores.
@@ -78,4 +73,8 @@ st.dataframe(
     hide_index=True,
 )
 
-st.info("Use o menu lateral para navegar entre Equipe e Projetos.")
+st.info("Use o menu lateral para navegar entre Equipe e Projetos.") 
+
+#Print Hello World
+print("Hello World")
+st.info("Fé no mengo.")
