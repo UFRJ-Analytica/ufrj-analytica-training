@@ -1,6 +1,7 @@
 PRAGMA foreign_keys = ON;
 
-DROP TABLE IF EXISTS populacao_municipal;
+DROP TABLE IF EXISTS recenseamento;
+DROP TABLE IF EXISTS censos;
 DROP TABLE IF EXISTS municipios;
 DROP TABLE IF EXISTS estados;
 DROP TABLE IF EXISTS regioes;
@@ -26,11 +27,18 @@ CREATE TABLE municipios (
  FOREIGN KEY (id_uf) REFERENCES estados(id_uf)
 );
 
-CREATE TABLE populacao_municipal (
- id_municipio INTEGER PRIMARY KEY,
+CREATE TABLE censos (
+ id_censo INTEGER PRIMARY KEY,
  ano INTEGER NOT NULL,
+ fonte TEXT NOT NULL
+);
+
+CREATE TABLE recenseamento (
+ id_municipio INTEGER,
+ id_censo INTEGER,
  valor INTEGER NOT NULL,
  unidade TEXT NOT NULL,
- fonte TEXT NOT NULL,
- FOREIGN KEY (id_municipio) REFERENCES municipios(id_municipio)
+ PRIMARY KEY(id_municipio, id_censo),
+ FOREIGN KEY (id_municipio) REFERENCES municipios(id_municipio),
+ FOREIGN KEY (id_censo) REFERENCES censos(id_censo)
 );
