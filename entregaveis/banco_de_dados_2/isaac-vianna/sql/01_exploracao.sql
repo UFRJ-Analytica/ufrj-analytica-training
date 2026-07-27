@@ -1,33 +1,40 @@
--- EXPLORAÇÃO — Mercado "Will Aston Villa win the UEFA Champions League?"
--- market_id = 507286 | event_id = 12585 | slug = champions-league-winner-2025
+-- ============================================================================
+-- EXPLORAÇÃO — Evento "Champions League Winner 2025" (event_id = 12585)
+-- 4 mercados de time comparados: Aston Villa, Borussia Dortmund, PSG, Young Boys
+-- Todas as queries rodam a partir do projeto pessoal do trainee, referenciando
+-- o projeto de treinamento pelo caminho completo entre crases.
+-- ============================================================================
 
--- Exploração 1: metadados do mercado escolhido
--- Pergunta: quem é esse mercado (pergunta, evento, janela temporal, status)?
-SELECT market_id, question, event_title, event_id, event_slug,
-       volume, created_at, end_date, closed, outcome_prices, token1, token2
+-- Exploração 1: todos os mercados de time do evento Champions League Winner 2025
+-- Pergunta: quais times têm mercado nesse evento, e qual o volume de cada um?
+-- (usado para escolher os 4 mercados com trajetórias distintas comparados aqui)
+SELECT market_id, question, volume, created_at, end_date, closed
 FROM `even-continuity-441808-j0.polymarket_optimized.markets`
-WHERE market_id = '507286';
+WHERE event_id = '12585'          -- event_id é STRING: usar aspas
+ORDER BY volume DESC;
 
--- Exploração 2: cobertura temporal do mercado (define a janela da análise)
--- Pergunta: qual o primeiro e o último dia com dados, e quanto volume foi negociado no total nesse intervalo?
-SELECT MIN(trade_date) AS primeiro_dia, MAX(trade_date) AS ultimo_dia,
-       COUNT(*) AS dias_com_dados, SUM(daily_usd_volume) AS volume_total
-FROM `even-continuity-441808-j0.polymarket_mart.daily_market_stats`
-WHERE market_id = '507286';
-
--- Exploração 3: série diária — probabilidade implícita, volume e média móvel de 7 dias
--- Pergunta: como a probabilidade implícita (avg_trade_price) e o volume diário evoluíram ao longo da campanha?
-SELECT trade_date, avg_trade_price, min_trade_price, max_trade_price,
+-- Exploração 2: série diária dos 4 mercados selecionados
+-- Pergunta: como a probabilidade implícita e o volume diário evoluíram em cada
+-- um dos 4 times ao longo da campanha?
+SELECT market_id, trade_date, avg_trade_price, min_trade_price, max_trade_price,
        daily_trade_count, daily_usd_volume, rolling_7d_avg_volume
 FROM `even-continuity-441808-j0.polymarket_mart.v_market_daily`
-WHERE market_id = '507286'
-ORDER BY trade_date;
+WHERE market_id IN ('507286','507294','507305','507319')
+ORDER BY market_id, trade_date;
 
--- Exploração 4: volatilidade / qualidade de preço diária
--- Pergunta: em quais dias os preços negociados foram mais dispersos/instáveis,
+-- Exploração 3: volatilidade diária dos 4 mercados
+-- Pergunta: em quais dias/mercados os preços negociados foram mais dispersos,
 -- indicando baixa liquidez ou ruído na formação de preço?
-SELECT trade_date, price_volatility, avg_price_deviation, max_price_deviation,
-       matched_trades, rolling_7d_avg_deviation
+SELECT market_id, trade_date, price_volatility, avg_price_deviation,
+       max_price_deviation, matched_trades, rolling_7d_avg_deviation
 FROM `even-continuity-441808-j0.polymarket_mart.v_price_quality_daily`
-WHERE market_id = '507286'
-ORDER BY trade_date;
+WHERE market_id IN ('507286','507294','507305','507319')
+ORDER BY market_id, trade_date;
+
+-- Exploração 4: rótulos (nome do time por market_id)
+-- Pergunta: qual pergunta/janela temporal/status corresponde a cada market_id?
+-- (usado no notebook para montar o dicionário market_id -> nome do time)
+SELECT market_id, question, created_at, end_date, closed
+FROM `even-continuity-441808-j0.polymarket_optimized.markets`
+WHERE market_id IN ('507286','507294','507305','507319')
+ORDER BY market_id;
