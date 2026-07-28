@@ -68,6 +68,8 @@ As duas regras dispararam em mercados diferentes e puderam ser aplicadas sem alt
 https://drive.google.com/drive/folders/1pl45WbRIkanomrS3ArIxOKsxWhVghBlW?usp=sharing
 
 ## Estrutura 
+
+```text
 pedro-henrique-ferrari/
 ├── README.md
 ├── relatorio.ipynb
@@ -77,3 +79,5 @@ pedro-henrique-ferrari/
     ├── 04_metricas_mercados_nba.csv
     ├── 05_alerta_volume_nba.csv
     └── 06_alerta_preco_nba.csv
+
+```
