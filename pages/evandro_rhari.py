@@ -50,25 +50,55 @@ def get_municipio_id(municipio, municipios=None):
 
 
 @st.cache_data
-def mapa_porte():
+def mapa_porte(porte_df: pd.DataFrame):
     with open('./backend/dados/grandes_regioes_json.geojson') as file:
         mapa = json.load(file)
+    porte_df = porte_df.sort_values('porte')
     fig = px.choropleth(porte_df, geojson=mapa, locations='id_regiao', scope='south america', color='porte', hover_data=['nome_regiao'], featureidkey="properties.ID", color_discrete_sequence=px.colors.sequential.Aggrnyl_r)
     st.plotly_chart(fig)
 
 
+def write_cool_emphasis(title, text):
+    st.markdown(f"<p style='margin:0; padding:0'>{title}</p>\n<p style='font-size:2rem; margin:0; padding:0'> {text}</p> ", unsafe_allow_html=True)
 
-st.title("Dados IBGE | Evandro Rhari")
-st.caption("Base inicial em Streamlit para apresentar equipe, projetos e frente de treino.")
+
+def kpis_sub_collumn(col_dict):
+    titles = list(col_dict.keys())
+    texts = list(col_dict.values())
+    cols = st.columns(len(col_dict))
+    for i in range(0, len(cols)):
+        with cols[i]:
+            write_cool_emphasis(titles[i], kpis[texts[i]])
 
 
-st.write("KPIs:")
-request_and_write("/estatisticas/resumo")
+st.title("População Brasileira | IBGE")
+st.caption("Informações em diferentes perspectivas sobre a população brasileira | Todos os dados vieram do IBGE. | Evandro Rhari")
+
+
+kpis = get_request("/estatisticas/resumo")
+kpis = kpis.loc[0]
+
+
+bigcols = st.columns(2)
+with bigcols[0]:
+    kpis_sub_collumn({
+        "Municipios": 'total_municipio',
+        "Estados": 'total_estado',
+        "Regioes": 'total_regioes',
+    })
+with bigcols[1]:
+    kpis_sub_collumn(col_dict = {
+        "Populacao: ": 'populacao_total',
+        "Ano": 'ano'
+    })
+
 
 
 tabs = st.tabs(['Top Municipios', 'População', 'Porte', 'Registros'])
 
 with tabs[0]:
+    st.write("## Top Município em População")
+
     topn = st.number_input("Quantidade de municipios:", step=1, value=5, min_value=1)
 
     col1, col2 = st.columns(2)
@@ -79,44 +109,53 @@ with tabs[0]:
 
 
 with tabs[1]:
+    st.write("## Dados sobre população")
+
+    pop_reg = get_request("/populacao/por-regiao", ['nome_regiao', 'populacao'])
+    pop_uf  = get_request("/populacao/por-uf", ['nome_uf', 'populacao_total'])
+
     col1, col2 = st.columns(2)
     with col1:
-        st.write("População por região")
-        pop_reg = request_and_write("/populacao/por-regiao", ['nome_regiao', 'populacao'])
-    with col2:
-        st.write("População por estado")
-        pop_uf = request_and_write("/populacao/por-uf", ['nome_uf', 'populacao_total'])
-    col1, col2 = st.columns(2)
-    with col1:
+        st.write("### População por região")
         donut_plot(pop_reg, 'nome_regiao', 'populacao')
     with col2:
+        st.write("### População por estado")
         donut_plot(pop_uf, 'nome_uf', 'populacao_total')
+    col1, col2 = st.columns(2)
+    with col1:
+        st.write(pop_reg)
+    with col2:
+        st.write(pop_uf)
 
 
-    st.write("Distribuição da população")
-    distribuicao_pop = request_and_write("/populacao/distribuicao")
+    st.write("### Distribuição da população")
+    distribuicao_pop = request_and_write("/populacao/distribuicao").sort_values('populacao')
 
-
-    st.write("Dispersão da população")
+    st.write("### Dispersão da população")
     dispersao_pop = request_and_write("/populacao/dispersao-uf")
+    dispersao_pop = dispersao_pop.drop(dispersao_pop[dispersao_pop['nome_uf'] == "Distrito Federal"].index, axis=0)
     st.scatter_chart(dispersao_pop, y='quantidade_municipios', x='populacao_media', color='nome_uf')
+    st.caption("Distro federal foi retirado por ser um outlier")
 
 
 with tabs[2]:
+    st.write("### Porte Regional ")
+    st.caption("Metrica: 0 ⊢ 0.8\*media -> Pequeno; 0.8\*media ⊢ 1.2\*media -> Medio; 1.2\*media >= -> Grande")
+
     col1, col2 = st.columns(2)
 
     with col1:
-        st.write("Porte")
         porte_df = request_and_write("/populacao/heatmap-regiao-porte")
 
     porte_df['id_mapa'] = (porte_df['id_regiao']+1).astype('str')
     porte_df['nome_regiao'] = porte_df['nome_regiao'].str.strip()
 
     with col2:
-        mapa_porte()
+        mapa_porte(porte_df)
 
 
 with tabs[3]:
+    st.write("## Gestão de Registros IBGE")
     crud = st.tabs(['Criar', 'Encontrar', 'Editar', 'Remover'])
     with crud[0]:
         municipios = get_request('/municipios')
@@ -180,7 +219,6 @@ with tabs[3]:
                         "responsavel": responsavel,
                         "id_municipio": municipio_id 
                         }
-                print(f"\n\n\n\n\n\n\n{data}\n\n\n\n\n\n\n\n")
                 r = request('PUT', prefix+f'/registros/{registro_id}', json=data)
                 if r.status_code != 200:
                     st.write("Algo deu errado.")
