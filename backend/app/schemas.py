@@ -7,7 +7,6 @@ forem implementando cada rota.
 """
 from pydantic import BaseModel
 
-
 class Regiao(BaseModel):
     id_regiao: int
     sigla_regiao: str
