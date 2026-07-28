@@ -28,7 +28,7 @@ A das queries foi detectar amplitudes acima do normal numa dada janela em seu en
 ## Nota pessoal
 Estou profundamente insatisfeito com o meu trabalho. Ele é estremamente derivado do trabalho do Carlos Pereira e acredito que as transformações que fiz são menos que insubstanciais: elas degradam o resultado.
 
-Durante o desenvolvimento, me senti incompetente e incapaz. Acredito que, no que diz respeito a banco de dados e BigQuery, tenha aprendido de forma satisfatória, porém não entendo nada de mercado financeiro especulativo e não tenho interesse em nenhum dos assuntos dos mercados do Polymarket, que variam entre política, futebol, guerras e datas. Não sabia sequer que informação poderia tirar desses dados, e por conseguinte não tinha certeza de como. 
+Durante o desenvolvimento, me senti incompetente e incapaz. Acredito que, no que diz respeito a banco de dados e BigQuery, tenha aprendido de forma satisfatória, mesmo que não boa, porém não entendo nada de mercado financeiro especulativo e não tenho interesse em nenhum dos assuntos dos mercados do Polymarket, que variam entre política, futebol, guerras e datas. Não sabia sequer que informação poderia tirar desses dados, e por conseguinte não tinha certeza de como. 
 
 Sou entusiastico em aprender novos assuntos, e tentei aprender um pouco sobre mercados financeiros e eleições para realizar a entrega de forma satisfatória. No entanto, o prazo se mostrou muito curto para entregar dois projeto volumosos em conteúdo técnico (esse e o de WebDev) ao mesmo tempo que se educa nos fundamentos da economia especulativa e os diferentes sistemas de eleição através do mundo. Dessa forma, o resultado foi um trabalho plagiado, desinteressante e de baixa qualidade. 
 
