@@ -38,18 +38,28 @@ SELECT DISTINCT
 FROM raw_municipios
 WHERE id_municipio IS NOT NULL;
 
-INSERT INTO populacao_municipal (
- id_municipio,
+INSERT INTO censos (
  ano,
- valor,
- unidade,
  fonte
 )
 SELECT DISTINCT
- id_municipio,
  ano,
- valor,
- unidade,
  fonte
 FROM raw_populacao_municipal
 WHERE id_municipio IS NOT NULL;
+
+INSERT INTO recenseamento (
+ id_censo,
+ id_municipio,
+ valor,
+ unidade
+)
+SELECT DISTINCT
+ censos.id_censo,
+ raw_populacao_municipal.id_municipio,
+ raw_populacao_municipal.valor,
+ raw_populacao_municipal.unidade
+FROM raw_populacao_municipal
+INNER JOIN censos 
+	ON raw_populacao_municipal.ano = censos.ano AND raw_populacao_municipal.fonte = censos.fonte
+WHERE id_municipio AND id_censo IS NOT NULL;
