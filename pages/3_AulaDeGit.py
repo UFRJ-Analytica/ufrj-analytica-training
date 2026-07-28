@@ -1,1 +1,0 @@
-print("Aula de git")
