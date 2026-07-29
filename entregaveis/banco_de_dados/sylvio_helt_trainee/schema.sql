@@ -1,6 +1,7 @@
 PRAGMA foreign_keys = ON;
 
-DROP TABLE IF EXISTS populacao_municipal;
+DROP TABLE IF EXISTS fato_indicador_municipal;
+DROP TABLE IF EXISTS indicadores;
 DROP TABLE IF EXISTS municipios;
 DROP TABLE IF EXISTS estados;
 DROP TABLE IF EXISTS regioes;
@@ -30,16 +31,30 @@ CREATE TABLE municipios (
         REFERENCES estados (id_uf)
 );
 
-CREATE TABLE populacao_municipal (
-    id_municipio INTEGER NOT NULL,
-    ano INTEGER NOT NULL,
-    indicador TEXT NOT NULL,
-    valor REAL NOT NULL,
+CREATE TABLE indicadores (
+    id_indicador INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome_indicador TEXT NOT NULL,
     unidade TEXT NOT NULL,
     fonte TEXT NOT NULL,
 
-    PRIMARY KEY (id_municipio, ano, indicador),
+    UNIQUE (nome_indicador, unidade, fonte)
+);
+
+CREATE TABLE fato_indicador_municipal (
+    id_municipio INTEGER NOT NULL,
+    id_indicador INTEGER NOT NULL,
+    ano INTEGER NOT NULL,
+    valor REAL NOT NULL,
+
+    PRIMARY KEY (
+        id_municipio,
+        id_indicador,
+        ano
+    ),
 
     FOREIGN KEY (id_municipio)
-        REFERENCES municipios (id_municipio)
+        REFERENCES municipios (id_municipio),
+
+    FOREIGN KEY (id_indicador)
+        REFERENCES indicadores (id_indicador)
 );
