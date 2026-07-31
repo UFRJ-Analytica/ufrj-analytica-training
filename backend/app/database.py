@@ -27,3 +27,14 @@ def query(sql: str, params: tuple = ()) -> list[dict]:
         return [dict(row) for row in rows]
     finally:
         conn.close()
+
+
+def execute(sql: str, params: tuple = ()) -> int:
+    """Executa INSERT/UPDATE/DELETE e retorna o total de linhas afetadas."""
+    conn = get_connection()
+    try:
+        cursor = conn.execute(sql, params)
+        conn.commit()
+        return cursor.rowcount
+    finally:
+        conn.close()

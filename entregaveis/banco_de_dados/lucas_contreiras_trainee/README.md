@@ -11,6 +11,7 @@ Transformar as tabelas brutas `raw_` em um modelo relacional normalizado, com po
 - `carga.sql`: população das tabelas normalizadas a partir das tabelas brutas.
 - `queries.sql`: 10 consultas SQL obrigatórias para exploração e validação.
 - `analytics.sql`: 6 consultas analíticas para análise estratégica de população.
+- `modelo_logico.png`: diagrama lógico do modelo relacional da entrega.
 - `README.md`: documentação da entrega (este arquivo).
 
 ## Dados brutos
@@ -30,34 +31,32 @@ As tabelas com prefixo `raw_` foram carregadas automaticamente a partir dos CSVs
 ```
 regioes
 ├── id_regiao (PK)
+├── sigla_regiao
 ├── nome_regiao
-└── código_regiao (opcional)
+└── relacionamento 1:N com estados
 
 estados
-├── id_estado (PK)
+├── id_uf (PK)
 ├── id_regiao (FK → regioes)
-├── nome_estado
-├── uf
-└── código_ibge (opcional)
+├── nome_uf
+└── sigla_uf
 
 municipios
 ├── id_municipio (PK)
-├── id_estado (FK → estados)
+├── id_uf (FK → estados)
 ├── nome_municipio
-└── código_ibge_municipio
+└── relacionamento N:1 com estados
 
 indicadores
 ├── id_indicador (PK)
 ├── nome_indicador
-└── descrição_indicador
+└── relacionamento 1:N com fato_indicador_municipal
 
 fato_indicador_municipal
-├── id_fato (PK)
-├── id_municipio (FK → municipios)
-├── id_indicador (FK → indicadores)
-├── valor_populacao_estimada
-├── ano_referencia
-└── data_coleta
+├── id_municipio (PK/FK → municipios)
+├── id_indicador (PK/FK → indicadores)
+├── ano (PK)
+└── valor
 ```
 
 ### Decisões de design
@@ -79,7 +78,7 @@ fato_indicador_municipal
 6. **Q6 - Contagem por estado**: GROUP BY + COUNT para contar municípios por estado.
 7. **Q7 - Contagem por região**: GROUP BY + COUNT para contar municípios por região.
 8. **Q8 - Agregação de população**: SUM agregando população por estado.
-9. **Q9 - Top 10 estados**: TOP N query retornando estados com maior quantidade de municípios.
+9. **Q9 - Top 10 estados**: query com `ORDER BY` + `LIMIT` retornando estados com maior quantidade de municípios.
 10. **Q10 - Demonstração DML**: CREATE TABLE, INSERT, UPDATE, DELETE em uma tabela de teste.
 
 ### analytics.sql (6 consultas analíticas)
@@ -110,4 +109,3 @@ fato_indicador_municipal
 - Todas as 10 queries obrigatórias foram implementadas em `queries.sql`.
 - Todas as 6 queries analíticas foram implementadas em `analytics.sql`.
 - Recomenda-se testar em DBeaver antes de submeter a entrega.
-
