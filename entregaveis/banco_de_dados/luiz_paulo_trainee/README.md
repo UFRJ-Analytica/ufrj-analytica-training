@@ -1,4 +1,4 @@
-# Entrega Banco de Dados 1 - luiz_paulo
+# Entrega Banco de Dados - luiz_paulo
 
 ## Objetivo
 
