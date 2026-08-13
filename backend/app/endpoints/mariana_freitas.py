@@ -1,11 +1,48 @@
+import sqlite3
+from pathlib import Path
 from fastapi import APIRouter, Query, HTTPException
-from app.database import query, execute
-from app.schemas import (
-    MunicipioCreate,
-    MunicipioUpdate,
-    RegistroCreate,
-    RegistroUpdate
+from pydantic import BaseModel
+
+
+DB_PATH = (
+    Path(__file__).resolve().parents[3]
+    / "entregaveis"
+    / "banco_de_dados"
+    / "mariana_freitas_trainee"
+    / "database.db"
 )
+
+
+def get_connection():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+class MunicipioCreate(BaseModel):
+    nome_municipio: str
+    id_uf: int
+    populacao: int
+
+
+class MunicipioUpdate(BaseModel):
+    nome_municipio: str | None = None
+    id_uf: int | None = None
+    populacao: int | None = None
+
+
+class RegistroCreate(BaseModel):
+    status: str
+    prioridade: str
+    observacao: str | None = None
+    responsavel: str | None = None
+
+
+class RegistroUpdate(BaseModel):
+    status: str | None = None
+    prioridade: str | None = None
+    observacao: str | None = None
+    responsavel: str | None = None
 
 
 router = APIRouter(
