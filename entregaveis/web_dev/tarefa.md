@@ -52,7 +52,9 @@ Antes de escrever qualquer código, abram o banco (com `sqlite3 database.db` no 
 
 O endpoint `GET /regioes`, em `backend/app/main.py`, já está pronto, olhem para ele como referência de padrão: recebe parâmetros, monta uma query, valida a resposta com Pydantic, devolve JSON.
 
-Como várias pessoas vão trabalhar no mesmo repositório, não concentrem tudo no `main.py`. Cada trainee deve criar seus endpoints em um arquivo próprio dentro de `backend/app/endpoints/`, seguindo o padrão `backend/app/endpoints/nome_sobrenome.py` (por exemplo, `backend/app/endpoints/ana_silva.py`). Dentro desse arquivo, criem um `router` do FastAPI e implementem as rotas da parte que vocês forem desenvolver.
+Como várias pessoas vão trabalhar no mesmo repositório, não concentrem tudo no `main.py`. Cada trainee deve criar seus endpoints em um arquivo próprio dentro de `backend/app/endpoints/`, seguindo o padrão `backend/app/endpoints/nome_sobrenome.py` (por exemplo, `backend/app/endpoints/ana_silva.py`). O `backend/app/main.py` já lê automaticamente os arquivos dessa pasta quando o Uvicorn sobe, então vocês não precisam editar o `main.py`.
+
+O padrão recomendado é criar um `router` do FastAPI:
 
 Exemplo de estrutura mínima:
 
@@ -68,6 +70,21 @@ def status():
 ```
 
 O `backend/app/main.py` já importa automaticamente os arquivos que tiverem um `router` dentro de `backend/app/endpoints/`. Se vocês preferirem fazer o registro manual, importem o arquivo no `main.py` e chamem `app.include_router(nome_sobrenome.router)`. Em qualquer caso, não editem o arquivo de endpoint de outra pessoa.
+
+Se vocês ainda estiverem no exemplo mais simples com `app = FastAPI()`, também funciona. Nesse caso, coloquem o nome de vocês no caminho da rota para evitar conflito com os colegas:
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/ana-silva/hello")
+def hello_world():
+    return {"mensagem": "Hello, World!"}
+```
+
+Evitem criar rotas genéricas como `@app.get("/")` nos arquivos individuais, porque várias pessoas usando a mesma URL vão causar conflito. Usem sempre um prefixo com o nome de vocês, como `/ana-silva/...`.
 
 A API precisa cobrir duas frentes:
 
@@ -106,11 +123,10 @@ Não acessem o banco direto pelo Streamlit. Toda comunicação passa pela API, v
 Terminal 1, a API:
 
 ```bash
-cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
+python -m venv backend/venv
+source backend/venv/bin/activate
+pip install -r backend/requirements.txt
+uvicorn app.main:app --reload --app-dir backend
 ```
 
 Documentação em `http://127.0.0.1:8000/docs`.
