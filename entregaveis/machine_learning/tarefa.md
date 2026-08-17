@@ -110,9 +110,9 @@ No `train2.csv` há 569 amostras, 357 benignas e 212 malignas — ou seja, cerca
 
 Os arquivos `regressao/test.csv` e `classiicacao/test2.csv` **já estão neste diretório, sem as labels**. São eles que vocês vão prever e submeter.
 
-### Formato de submissão
+[Tarefa de Regressão](https://www.kaggle.com/competitions/ufrj-analytica-training-ml)
 
-O **link da competição** e o `sample_submission.csv` com o formato exato **serão divulgados depois**. Enquanto isso, deixem os modelos prontos e a função de gerar submissão escrita. O formato deve ser parecido com:
+[Tarefa de Classificação](https://www.kaggle.com/competitions/tarefa-de-machine-learning-classificacao)
 
 ```csv
 id,score
@@ -123,12 +123,14 @@ id,score
 
 ```csv
 id,diagnosis
-0,B
-1,M
+0,0
+1,1
+2,0
+3,0
 ...
 ```
 
-Quando o link sair, confiram no `sample_submission.csv` o nome exato das colunas, o tipo do `id` (índice começando em 0 ou em 1) e se `diagnosis` deve ser `M`/`B` ou `1`/`0`. Uma submissão com o cabeçalho errado é rejeitada mesmo com o modelo perfeito.
+Confiram no `sample_submission.csv` o nome exato das colunas, o tipo do `id` (índice começando em 0 ou em 1) e se `diagnosis` deve ser `1`/`0`. Uma submissão com o cabeçalho errado é rejeitada mesmo com o modelo perfeito.
 
 Antes de submeter, abram o `submission.csv` e confiram três coisas: o número de linhas bate com o do arquivo de teste, não tem `NaN`, e os valores estão numa faixa plausível (nota entre 0 e 20 na regressão; só `M` e `B` na classificação).
 
