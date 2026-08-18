@@ -1,15 +1,3 @@
-"""
-Tela de acompanhamento populacional - Leticia Pessoa
-
-Duas áreas:
-- Análise: KPIs, top N, pizza por região, barras por estado, histograma,
-  dispersão município x estado, heatmap região x porte.
-- Cadastro: CRUD dos dados básicos do município (nome/estado/população)
-  e CRUD das anotações do gestor (status, prioridade, observação...).
-
-Toda comunicação com os dados passa pela API via requests - nenhuma
-conexão direta com o banco acontece aqui.
-"""
 import streamlit as st
 import requests
 import pandas as pd
@@ -20,13 +8,11 @@ API_URL = "http://127.0.0.1:8000/leticia-pessoa"
 st.set_page_config(page_title="Acompanhamento populacional", layout="wide")
 st.title("Painel de acompanhamento populacional")
 
-
 # ---------------------------------------------------------------------------
 # Funções auxiliares de chamada à API
 # ---------------------------------------------------------------------------
 
 def api_get(caminho: str, params: dict | None = None):
-    """GET genérico. Retorna o JSON da resposta, ou None se a API falhar."""
     try:
         resposta = requests.get(f"{API_URL}{caminho}", params=params, timeout=5)
         resposta.raise_for_status()
@@ -34,7 +20,6 @@ def api_get(caminho: str, params: dict | None = None):
     except requests.exceptions.RequestException as erro:
         st.error(f"Não foi possível conectar à API ({caminho}). Detalhe: {erro}")
         return None
-
 
 def api_post(caminho: str, dados: dict):
     try:
@@ -65,13 +50,16 @@ def api_delete(caminho: str):
         st.error(f"Erro ao remover registro ({caminho}). Detalhe: {erro}")
         return None
 
+def obter_opcoes_municipios():
+    lista = api_get("/municipios")
+    if not lista:
+        return {}
+    return {f"{m['nome_municipio']} (id {m['id_municipio']})": m["id_municipio"] for m in lista}
 
 # ---------------------------------------------------------------------------
-# Abas principais
+# Layout abas
 # ---------------------------------------------------------------------------
-
-aba_analise, aba_cadastro = st.tabs(["📊 Análise", "📝 Cadastro"])
-
+aba_analise, aba_cadastro = st.tabs(["Análise", "Cadastro"])
 
 # ---------------------------------------------------------------------------
 # ABA DE ANÁLISE
@@ -98,15 +86,15 @@ with aba_analise:
     # --- Top N municípios -------------------------------------------------
     st.subheader("Top municípios mais populosos")
     n = st.slider("Quantidade de municípios", min_value=3, max_value=50, value=10)
-
     top_municipios = api_get("/populacao/top_municipios", params={"n": n})
 
     if top_municipios:
         df_top = pd.DataFrame(top_municipios)
-
         col_tabela, col_grafico = st.columns([1, 2])
+
         with col_tabela:
             st.dataframe(df_top, hide_index=True, use_container_width=True)
+
         with col_grafico:
             fig_top = px.bar(
                 df_top.sort_values("populacao"),
@@ -117,7 +105,7 @@ with aba_analise:
 
     st.divider()
 
-    # --- População por região e por estado, lado a lado -------------------
+    # --- População por região e por estado ---------------------------------
     col_regiao, col_estado = st.columns(2)
 
     with col_regiao:
@@ -151,6 +139,7 @@ with aba_analise:
 
     st.divider()
 
+    
     # --- Distribuição da população (histograma) ----------------------------
     st.subheader("Distribuição da população dos municípios")
     distribuicao = api_get("/populacao/municipio")
@@ -165,40 +154,45 @@ with aba_analise:
 
     st.divider()
 
+    col_dispersão, col_heatmap = st.columns(2)
     # --- Dispersão município x estado ---------------------------------------
-    st.subheader("Municípios x população média por estado")
-    dispersao = api_get("/populacao/dispersao-uf")
-    if dispersao:
-        df_disp = pd.DataFrame(dispersao)
-        fig_disp = px.scatter(
-            df_disp,
-            x="quantidade_municipios", y="populacao_media",
-            color="regiao", hover_name="estado",
-            labels={
-                "quantidade_municipios": "Quantidade de municípios",
-                "populacao_media": "População média",
-            },
-        )
-        st.plotly_chart(fig_disp, use_container_width=True)
+    with col_dispersão:
+        st.subheader("Municípios x população média por estado")
+        dispersao = api_get("/populacao/dispersao-uf")
+        if dispersao:
+            df_disp = pd.DataFrame(dispersao)
+            fig_disp = px.scatter(
+                df_disp,
+                x="quantidade_municipios", y="populacao_media",
+                color="regiao", hover_name="estado",
+                log_x=True,log_y=True,
+                labels={
+                    "quantidade_municipios": "Quantidade de municípios (escala log)",
+                    "populacao_media": "População média (escala log)",
+                },
+            )
+            st.plotly_chart(fig_disp, use_container_width=True)
 
-    st.divider()
+    
 
     # --- Heatmap região x porte ---------------------------------------------
-    st.subheader("Mapa de calor: região x porte do município")
-    heatmap_dados = api_get("/populacao/heatmap-regiao-porte")
-    if heatmap_dados:
-        df_heat = pd.DataFrame(heatmap_dados)
-        tabela_pivot = df_heat.pivot_table(
-            index="regiao", columns="porte", values="quantidade", fill_value=0
-        )
-        fig_heat = px.imshow(
-            tabela_pivot,
-            text_auto=True,
-            labels=dict(x="Porte", y="Região", color="Quantidade"),
-            color_continuous_scale="Blues",
-        )
-        st.plotly_chart(fig_heat, use_container_width=True)
+    with col_heatmap:
+        st.subheader("Mapa de calor: região x porte do município")
+        heatmap_dados = api_get("/populacao/heatmap-regiao-porte")
+        if heatmap_dados:
+            df_heat = pd.DataFrame(heatmap_dados)
+            tabela_pivot = df_heat.pivot_table(
+                index="regiao", columns="porte", values="quantidade", fill_value=0
+            )
+            fig_heat = px.imshow(
+                tabela_pivot,
+                text_auto=True,
+                labels=dict(x="Porte", y="Região", color="Quantidade"),
+                color_continuous_scale="Blues",
+            )
+            st.plotly_chart(fig_heat, use_container_width=True)
 
+st.divider()
 
 # ---------------------------------------------------------------------------
 # ABA DE CADASTRO
@@ -261,8 +255,9 @@ with aba_cadastro:
                     )
                     uf_edit = st.number_input(
                         "Código do estado (id_uf)",
-                        min_value=1, step=1,
+                        min_value=0, step=1,
                         value=int(municipio_atual["id_uf"]),
+                        help = "Se aparece 0, o município pode ter um id_uf inválido - corrija antes de salvar",
                     )
                     populacao_edit = st.number_input(
                         "População",

@@ -5,6 +5,38 @@ from app.schemas import KpiResponse, TopMunicipio, PopulacaoPorRegiao, Populacao
 
 router = APIRouter(prefix="/leticia-pessoa", tags=["leticia-pessoa"])
 
+# ---------------------------------------------------------------------------
+# 1. Funções auxiliares locais
+# ---------------------------------------------------------------------------
+def execute(sql: str, params: tuple = ())-> int:
+    """Executa INSERT, UPDATE ou DELETE(função local, só desse arquivo)."""
+    conn = get_connection()
+    try:
+        cursor = conn. execute(sql, params)
+        conn.commit()
+        return cursor.lastrowid
+    finally:
+        conn.close()
+
+def municipio_existe(id_municipio: int) -> bool:
+    """Verifica se um município com esse id existe no banco."""
+    resultado = query(
+        "SELECT id_municipio FROM municipios WHERE id_municipio = ?",
+        (id_municipio,)
+    )
+    return len(resultado) > 0
+
+def estado_existe(id_uf: int) -> bool:
+    resultado = query("SELECT id_uf FROM estados WHERE id_uf = ?", (id_uf,))
+    return len(resultado) > 0
+
+def ano_referencia() -> int:
+    """Devolve o ano mais recente disponível na tabela de população."""
+    return query("SELECT MAX(ano) AS ano FROM populacao")[0]["ano"]
+
+# ---------------------------------------------------------------------------
+# 2. Análise
+# ---------------------------------------------------------------------------
 @router.get("/status")
 def status():
     return{"status": "ok"}
@@ -12,12 +44,12 @@ def status():
 @router.get("/estatisticas/resumo", response_model=KpiResponse)
 def kpis():
 
-    ano_referencia = query("SELECT MAX(ano) AS ano FROM populacao")[0]["ano"]
+    ano = ano_referencia()
 
     total_municipios = query ("SELECT COUNT(*) AS total FROM municipios")[0]["total"]
     total_estados = query ("SELECT COUNT(*) AS total FROM estados")[0]["total"]
 
-    populacao_total = query("SELECT SUM(valor_populacao) AS total FROM populacao WHERE ano =?",(ano_referencia,))[0]["total"]
+    populacao_total = query("SELECT SUM(valor_populacao) AS total FROM populacao WHERE ano =?",(ano,))[0]["total"]
 
     municipio_mais_populoso = query(
         """
@@ -29,14 +61,14 @@ def kpis():
         ORDER BY p.valor_populacao DESC
         LIMIT 1
         """,
-        (ano_referencia,)
+        (ano,)
     )[0]["nome"]
 
     return KpiResponse(
         total_municipios=total_municipios,
         total_estados=total_estados,
         populacao_total=populacao_total,
-        ano_referencia=ano_referencia,
+        ano_referencia=ano,
         municipio_mais_populoso=municipio_mais_populoso,
     )
 
@@ -148,23 +180,14 @@ def heatmap():
     )
 
 # ---------------------------------------------------------------------------
-# Municipios: informações que o gestor registra sobre um município.
+# 3. Municipios
 # ---------------------------------------------------------------------------
-
-# Funções locais
-def execute(sql: str, params: tuple = ())-> int:
-    """Executa INSERT, UPDATE ou DELETE(função local, só desse arquivo)."""
-    conn = get_connection()
-    try:
-        cursor = conn. execute(sql, params)
-        conn.commit()
-        return cursor.lastrowid
-    finally:
-        conn.close()
 
 # Endpoints
 @router.post("/municipios", response_model=MunicipioResponse)
-def criar_municipio(municipio: MunicipioCreate): # populacao é separado de municipio RESOLVER
+def criar_municipio(municipio: MunicipioCreate):
+    if not estado_existe( municipio.id_uf):
+        raise HTTPException(status_code=404, detail="id_uf informado não existe")
     maior_id = query("SELECT MAX(id_municipio) AS maior FROM municipios")[0]["maior"]
     novo_id = (maior_id or 0) + 1
 
@@ -173,11 +196,15 @@ def criar_municipio(municipio: MunicipioCreate): # populacao é separado de muni
         (novo_id, municipio.nome_municipio, municipio.id_uf)
     )
 
+    execute(
+        "INSERT INTO populacao (id_municipio, ano, valor_populacao) VALUES (?, ?, ?)",
+        (novo_id, ano_referencia(), municipio.populacao)
+    )
     return MunicipioResponse(
         id_municipio=novo_id,
         nome_municipio=municipio.nome_municipio,
         id_uf = municipio.id_uf,
-        populacao = municipio.populacao
+        populacao = municipio.populacao,
     )
 
 @router.get("/municipios", response_model=list[MunicipioResponse])
@@ -188,11 +215,13 @@ def listar_municipios():
             m.id_municipio,
             m.nome_municipio,
             m.id_uf,
-            p.valor_populacao AS populacao
-        FROM populacao p
-        JOIN municipios m ON m.id_municipio = p.id_municipio
+            COALESCE(p.valor_populacao, 0) AS populacao
+        FROM municipios m
+        LEFT JOIN populacao p ON p.id_municipio = m.id_municipio
+            AND p.ano = (SELECT MAX(ano) FROM populacao)
         """
     )
+
 
 @router.get("/municipios/{id_municipio}", response_model=MunicipioResponse)
 def buscar_municipio(id_municipio: int):
@@ -201,10 +230,10 @@ def buscar_municipio(id_municipio: int):
         SELECT
             m.id_municipio,
             m.nome_municipio,
-            m.id_uf, 
-            p.valor_populacao AS populacao
-        FROM populacao p
-        JOIN municipios m ON m.id_municipio = p.id_municipio
+            m.id_uf,
+            COALESCE(p.valor_populacao, 0) AS populacao
+        FROM municipios m
+        LEFT JOIN populacao p ON p.id_municipio = m.id_municipio
             AND p.ano = (SELECT MAX(ano) FROM populacao)
         WHERE m.id_municipio = ?
         """,
@@ -214,65 +243,61 @@ def buscar_municipio(id_municipio: int):
         raise HTTPException(status_code=404, detail="Município não encontrado")
     return resultado[0]
 
-
 @router.put("/municipios/{id_municipio}", response_model=MunicipioResponse)
 def atualizar_municipio(id_municipio: int, municipio: MunicipioUpdate):
-    # Achar municipio / substituir por buscar?
-    existente = query(
-        """
-        SELECT
-            m.id_municipio,
-            m.nome_municipio,
-            m.id_uf, 
-            p.valor_populacao AS populacao
-        FROM populacao p
-        JOIN municipios m ON m.id_municipio = p.id_municipio
-            AND p.ano = (SELECT MAX(ano) FROM populacao)
-        WHERE m.id_municipio = ?
-        """,
-        (id_municipio,)
-    )
-    # se o municipio não existir
-    if not existente:
-        raise HTTPException(status_code=404, detail="Município não encontrado")
+    if not municipio_existe(id_municipio):
+        raise HTTPException(status=404, detail="Município não encontrado")
 
-    # Atualizar
-    dados_atuais = existente[0]
+    dados_atuais = buscar_municipio(id_municipio)
+
+    # Atualizar municipio
     novo_nome = municipio.nome_municipio if municipio.nome_municipio is not None else dados_atuais["nome_municipio"]
     novo_uf = municipio.id_uf if municipio.id_uf is not None else dados_atuais["id_uf"]
+    nova_populacao = municipio.populacao if municipio.populacao is not None else dados_atuais["populacao"]
+
+    if municipio.id_uf is not None and not estado_existe(municipio.id_uf):
+        raise HTTPException(status_code=400, detail="id_uf informado não existe")
 
     execute(
         "UPDATE municipios SET nome_municipio = ?, id_uf = ? WHERE id_municipio = ?",
         (novo_nome, novo_uf, id_municipio)
     )
 
+    # Atualizar populacao
+    existe_pop = query("SELECT 1 FROM populacao WHERE id_municipio = ? AND ano = ?",(id_municipio, ano_referencia()))
+
+    if existe_pop:
+        execute(
+            "UPDATE populacao SET valor_populacao = ? WHERE id_municipio = ? AND ano = ?",
+            (nova_populacao, id_municipio, ano_referencia())
+        )
+    else:
+        execute(
+            "INSERT INTO populacao(id_municipio, ano, valor_populacao) VALUES (?,?,?)",
+            (id_municipio, ano_referencia(), nova_populacao)
+        )
     return buscar_municipio(id_municipio)
 
 @router.delete("/municipios/{id_municipio}")
 def remover_municipio(id_municipio: int):
-    existente = query(
-        "SELECT id_municipio FROM municipios WHERE id_municipio =?",
-        (id_municipio,)
-    )
-    # se o municipio não existir
-    if not existente:
+    if not municipio_existe(id_municipio):
         raise HTTPException(status_code=404, detail="Município não encontrado")
 
+    # Limpeza de dependencias
+    execute("DELETE FROM populacao WHERE id_municipio = ?", (id_municipio,))
+    execute("DELETE FROM cadastro_municipio WHERE id_municipio = ?", (id_municipio,))
     execute("DELETE FROM municipios WHERE id_municipio =?", (id_municipio,))
+
     return {"mensagem": "Município removido com sucesso"}
 
 # ---------------------------------------------------------------------------
-# Cadastro: informações de gestão
+# 4. Cadastro: informações de gestão
 # ---------------------------------------------------------------------------
 
 @router.post("/cadastro", response_model=CadastroResponse)
 def criar_cadastro(cadastro: CadastroCreate):
-    existe_municipio = query(
-        "SELECT id_municipio FROM municipios WHERE id_municipio = ?",
-        (cadastro.id_municipio,)
-    )
-    if not existe_municipio:
-        raise HTTPException(status_code=404, detail= "Município não encontrado")
+    if not municipio_existe(cadastro.id_municipio):
+        raise HTTPException(status=404,detail="Município não encontrado")
 
     agora = datetime.now().isoformat()
 
@@ -287,9 +312,11 @@ def criar_cadastro(cadastro: CadastroCreate):
 
     return buscar_cadastro(novo_id)
 
+
 @router.get("/cadastro", response_model=list[CadastroResponse])
 def listar_cadastro():
     return query("SELECT * FROM cadastro_municipio")
+
 
 @router.get("/cadastro/{id_cadastro}",response_model=CadastroResponse)
 def buscar_cadastro(id_cadastro:int):
@@ -300,6 +327,7 @@ def buscar_cadastro(id_cadastro:int):
     if not resultado:
         raise HTTPException(status_code=404, detail="Cadastro não encontrado")
     return resultado[0]
+
 
 @router.put("/cadastro/{id_cadastro}", response_model=CadastroResponse)
 def atualizar_cadastro(id_cadastro: int, cadastro: CadastroUpdate):

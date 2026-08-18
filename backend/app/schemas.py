@@ -5,14 +5,12 @@ Regiao já está pronto, como referência. Os demais modelos (para os
 endpoints de análise e de cadastro) ficam por conta de vocês, conforme
 forem implementando cada rota.
 """
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class Regiao(BaseModel):
     id_regiao: int
     sigla_regiao: str
     nome_regiao: str
-
-# adicionados por leticia pessoa
 
 class KpiResponse(BaseModel):
     total_municipios: int
@@ -49,16 +47,15 @@ class RegiaoPorte(BaseModel):
 # Municipios: informações que o gestor registra sobre um município.
 # ---------------------------------------------------------------------------
 
-
 class MunicipioCreate(BaseModel):
     nome_municipio: str
-    id_uf: int
-    populacao: int
+    id_uf: int = Field(gt=0) # evitar id invalido
+    populacao: int = Field(gt=0) # população não pode ser negativa
 
 class MunicipioUpdate(BaseModel):
     nome_municipio: str | None = None
-    id_uf: int | None = None
-    populacao: int | None = None
+    id_uf: int | None =  Field(default = None,gt=0)
+    populacao: int | None = Field(default = None,gt=0)
     
 class MunicipioResponse(BaseModel):
     id_municipio: int
