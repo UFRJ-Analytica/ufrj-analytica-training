@@ -1,0 +1,2 @@
+-- schema.sql
+-- Defina aqui a estrutura do banco de dados normalizado.
