@@ -13,7 +13,7 @@ import plotly.graph_objects as go
 from requests import request
 
 
-prefix = "http://127.0.0.1:8000/evandro-rhari"
+prefix = "http://backend:8000/evandro-rhari"
 
 
 def get_request(url, columns=[]):
@@ -51,7 +51,7 @@ def get_municipio_id(municipio, municipios=None):
 
 @st.cache_data
 def mapa_porte(porte_df: pd.DataFrame):
-    with open('./backend/dados/grandes_regioes_json.geojson') as file:
+    with open('./data/grandes_regioes_json.geojson') as file:
         mapa = json.load(file)
     porte_df = porte_df.sort_values('porte')
     fig = px.choropleth(porte_df, geojson=mapa, locations='id_regiao', scope='south america', color='porte', hover_data=['nome_regiao'], featureidkey="properties.ID", color_discrete_sequence=px.colors.sequential.Aggrnyl_r)

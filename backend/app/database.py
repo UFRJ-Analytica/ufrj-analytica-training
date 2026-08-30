@@ -8,7 +8,7 @@ import sqlite3
 from pathlib import Path
 
 # O database.db fica na raiz do repositório, um nível acima de "backend".
-DB_PATH = Path(__file__).resolve().parent.parent.parent / "entregaveis/banco_de_dados/evandro_rhari_trainee/database.db"
+DB_PATH = "./dados/database.db"
 
 
 def get_connection() -> sqlite3.Connection:
