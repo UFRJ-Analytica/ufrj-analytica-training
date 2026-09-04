@@ -17,7 +17,6 @@ import pkgutil
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-
 from app import endpoints
 from app.database import query
 from app.schemas import Regiao
