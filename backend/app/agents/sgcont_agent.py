@@ -225,7 +225,9 @@ def status_agente() -> dict[str, Any]:
         "agent": "sgcont",
         "responsibility": "Agente didatico para entregaveis 1 e 2 da orquestracao de IA.",
         "langgraph_available": LANGGRAPH_AVAILABLE,
-        "langgraph_import_error": LANGGRAPH_IMPORT_ERROR,
+        "langgraph_import_error": None
+        if LANGGRAPH_AVAILABLE
+        else "Dependencias LangGraph indisponiveis no ambiente.",
         "llm_configured": llm_configurado,
         "model_config": MODEL_CONFIG,
         "mode": modo,

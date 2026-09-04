@@ -41,12 +41,9 @@ def chat(request: ChatRequest):
             message=request.message,
             history=[_dump_chat_message(item) for item in request.history],
         )
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
-    except Exception as exc:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Erro ao executar o agente: {exc}",
-        ) from exc
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Mensagem invalida.")
+    except Exception:
+        raise HTTPException(status_code=500, detail="Erro interno ao executar o agente.")
 
     return ChatResponse(response=response)

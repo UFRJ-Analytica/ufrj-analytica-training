@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import html
 import os
+from urllib.parse import urlparse
 from typing import Any
 
 import requests
@@ -90,6 +91,12 @@ def renderizar_historico(messages: list[dict[str, str]]) -> None:
 
 
 def chamar_backend(backend_url: str, message: str, history: list[dict[str, str]]) -> str:
+    parsed = urlparse(backend_url)
+    if parsed.scheme not in {"http", "https"}:
+        raise ValueError("Use um endpoint HTTP/HTTPS valido.")
+    if parsed.hostname not in {"127.0.0.1", "localhost"}:
+        raise ValueError("Por seguranca, use apenas backend local (127.0.0.1 ou localhost).")
+
     payload: dict[str, Any] = {"message": message, "history": history}
     response = requests.post(backend_url, json=payload, timeout=60)
     response.raise_for_status()
@@ -104,7 +111,8 @@ st.caption("Chat Streamlit integrado ao backend FastAPI e ao agente em LangGraph
 
 with st.sidebar:
     st.subheader("Backend")
-    backend_url = st.text_input("Endpoint do agente", value=DEFAULT_BACKEND_URL)
+    backend_url = DEFAULT_BACKEND_URL
+    st.code(backend_url)
     if st.button("Limpar conversa", use_container_width=True):
         del st.session_state[STATE_KEY]
         st.rerun()
@@ -129,6 +137,8 @@ if prompt:
             resposta = "O backend demorou demais para responder. Tente novamente."
         except requests.exceptions.HTTPError as exc:
             resposta = f"O backend retornou erro HTTP: {exc.response.status_code}."
+        except ValueError as exc:
+            resposta = str(exc)
         except requests.exceptions.RequestException as exc:
             resposta = f"Erro ao chamar o backend: {exc}"
 
