@@ -5,8 +5,8 @@ Regiao já está pronto, como referência. Os demais modelos (para os
 endpoints de análise e de cadastro) ficam por conta de vocês, conforme
 forem implementando cada rota.
 """
-from pydantic import BaseModel
-
+from pydantic import BaseModel, Field
+from typing import Optional
 
 class Regiao(BaseModel):
     id_regiao: int
