@@ -1,6 +1,9 @@
 streamlit>=1.36
 pandas>=2.2   
 requests
-pandas
 plotly
 fastapi
+uvicorn
+scikit-learn>=1.3
+numpy>=1.24
+seaborn>=0.12
