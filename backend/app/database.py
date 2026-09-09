@@ -8,7 +8,7 @@ import sqlite3
 from pathlib import Path
 
 # O database.db fica na raiz do repositório, um nível acima de "backend".
-DB_PATH = Path(__file__).resolve().parent.parent.parent / "database.db"
+DB_PATH = "./dados/database.db"
 
 
 def get_connection() -> sqlite3.Connection:
@@ -27,3 +27,17 @@ def query(sql: str, params: tuple = ()) -> list[dict]:
         return [dict(row) for row in rows]
     finally:
         conn.close()
+
+
+def alter(sql: str, params: tuple = ()):
+    """Executa um INSERT e retorna se foi bem sucessido"""
+    conn = get_connection()
+    try:
+        conn.execute(sql, params)
+        conn.commit()
+        return {"success": True, 'detail': ''}
+    except Exception as e:
+        return {"success": False, 'detail': ""}
+    finally:
+        conn.close()
+

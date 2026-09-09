@@ -6,86 +6,38 @@ endpoints de análise e de cadastro) ficam por conta de vocês, conforme
 forem implementando cada rota.
 """
 from pydantic import BaseModel, Field
+from typing import Optional
 
 class Regiao(BaseModel):
     id_regiao: int
     sigla_regiao: str
     nome_regiao: str
 
-class KpiResponse(BaseModel):
-    total_municipios: int
-    total_estados: int
-    populacao_total: int 
-    ano_referencia:int
-    municipio_mais_populoso: str
+class Estado(BaseModel):
+    id_uf: int
+    sigla_uf: str
+    nome_uf: str
+    id_regiao: int
 
-class TopMunicipio(BaseModel):
-    nome: str
-    populacao:int
-
-class PopulacaoPorRegiao(BaseModel):
-    regiao: str
-    populacao: int
-
-class PopulacaoPorEstado(BaseModel):
-    regiao: str
-    estado: str
-    populacao: int
-
-class DispersaoMunicipioEstado(BaseModel):
-    regiao: str
-    estado: str
-    quantidade_municipios: int
-    populacao_media: float
-
-class RegiaoPorte(BaseModel):
-    regiao: str
-    porte: str
-    quantidade: int
-
-# ---------------------------------------------------------------------------
-# Municipios: informações que o gestor registra sobre um município.
-# ---------------------------------------------------------------------------
-
-class MunicipioCreate(BaseModel):
-    nome_municipio: str
-    id_uf: int = Field(gt=0) # evitar id invalido
-    populacao: int = Field(gt=0) # população não pode ser negativa
-
-class MunicipioUpdate(BaseModel):
-    nome_municipio: str | None = None
-    id_uf: int | None =  Field(default = None,gt=0)
-    populacao: int | None = Field(default = None,gt=0)
-    
-class MunicipioResponse(BaseModel):
-    id_municipio: int
+class Municipio(BaseModel):
+    id_municipio: int = 0
     nome_municipio: str
     id_uf: int
-    populacao: int
 
-# ---------------------------------------------------------------------------
-# Cadastro: informações de gestão
-# ---------------------------------------------------------------------------
+class MunicipioUpdate(BaseModel):
+    id_municipio: int = 0
+    nome_municipio: str = None
+    id_uf: int = None
 
-class CadastroCreate(BaseModel):
+class CadastroMunicipal(BaseModel):
+    status_atual: str
+    prioridade: str
+    responsavel: str
     id_municipio: int
-    status: str | None = None
-    prioridade: str | None = None
-    observacao: str | None = None
-    responsavel: str | None = None
 
-class CadastroUpdate(BaseModel):
-    status: str | None = None
-    prioridade: str | None = None
-    observacao: str | None = None
-    responsavel: str | None = None
-
-class CadastroResponse(BaseModel):
-    id_cadastro: int
-    id_municipio: int
-    status: str | None 
-    prioridade: str | None 
-    observacao: str | None 
-    responsavel: str | None
-    data_criacao: str | None
-     
+class CadastroMunicipalUpdate(BaseModel):
+    id_cadastro_municipal: int = 0
+    status_atual: str = None
+    prioridade: str = None
+    responsavel: str = None
+    id_municipio: int = None
