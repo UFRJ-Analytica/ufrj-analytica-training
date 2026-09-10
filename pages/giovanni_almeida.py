@@ -4,8 +4,18 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-BASE_URL = "http://127.0.0.1:8000/giovanni-almeida"
+import os
+# Lê a variável de ambiente ou usa a URL da rede interna do Docker Compose
+raw_base = os.getenv("BASE_URL", "http://backend:8000")
 
+# Normaliza removendo barras finais para evitar duplicidade
+raw_base = raw_base.rstrip("/")
+
+# Garante que o prefixo /giovanni-almeida esteja presente exatamente uma vez
+if not raw_base.endswith("/giovanni-almeida"):
+    BASE_URL = f"{raw_base}/giovanni-almeida"
+else:
+    BASE_URL = raw_base
 def _fazer_requisicao(metodo: str, endpoint: str, payload: dict = None, params: dict = None) -> dict | list | None:
     """
     Função universal para lidar com o tráfego HTTP.
