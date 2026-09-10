@@ -1,0 +1,29 @@
+services:
+
+  backend:
+    build: 
+      context: ../../../
+      dockerfile: entregaveis\devops_docker_1\giovanni-almeida\backend.Dockerfile
+    ports:
+      - "8001:8000"
+    volumes:
+      - ../../../database.db:/backend/database.db
+    environment:
+      - DB_PATH=/backend/database.db
+      #Healthchecks usando a rota "/" do main.py
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/').read()"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+  frontend:
+    build: 
+      context: ../../../
+      dockerfile: entregaveis\devops_docker_1\giovanni-almeida\Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      - BASE_URL=http://backend:8000//
+    depends_on:
+      - backend

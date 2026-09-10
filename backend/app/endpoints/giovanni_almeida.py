@@ -4,11 +4,30 @@ from app.schemas import Regiao
 from pydantic import BaseModel
 from pathlib import Path
 import app.database
+import os
+import sqlite3
+TARGET_DB_PATH = os.getenv("DB_PATH", "/backend/database.db")
+ 
 
+# Se por acaso não estiver em /backend/database.db, busca na raiz do repo
+if not os.path.exists(TARGET_DB_PATH):
+    fallback_path = Path(__file__).resolve().parent.parent.parent.parent / "database.db"
+    if fallback_path.exists():
+        TARGET_DB_PATH = str(fallback_path)
 
-#Checar se está atualizando corretamente, se os filtros estão bem aplicados/poderiam ser melhor,
-#E entreggar
-app.database.DB_PATH= Path(__file__).resolve().parent.parent.parent.parent/"entregaveis"/"banco_de_dados"/"giovanni_almeida_trainee"/"database.db"
+# 2. Patch do atributo DB_PATH no módulo
+app.database.DB_PATH = TARGET_DB_PATH
+
+# 3. Patch definitivo da função get_connection
+# Garante que NENHUMA função do database.py tente abrir o caminho antigo
+def patched_get_connection():
+    conn = sqlite3.connect(TARGET_DB_PATH)
+    conn.row_factory = sqlite3.Row 
+    return conn
+app.database.get_connection = patched_get_connection
+
+# 4. Atualiza a referência importada localmente no seu arquivo
+get_connection = patched_get_connection
 """ Antes de tudo, função gerenciadora de DB para garantir que possa ter transações"""
 def execute_transaction(statements: list[tuple[str, dict]]) -> None:
     """Executa uma lista de instruções de escrita garantindo a efetivação (commit)."""
