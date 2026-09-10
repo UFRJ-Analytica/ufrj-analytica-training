@@ -18,9 +18,9 @@ import pkgutil
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
-from app import endpoints
-from app.database import query
-from app.schemas import Regiao
+import endpoints
+from database import query
+from schemas import Regiao
 
 app = FastAPI(
     title="UFRJ Analytica - Sistema de Acompanhamento Populacional",
@@ -39,7 +39,7 @@ app.add_middleware(
 def incluir_endpoints_dos_trainees() -> None:
     """Importa automaticamente rotas criadas em app/endpoints/*.py."""
     for module_info in pkgutil.iter_modules(endpoints.__path__):
-        module = importlib.import_module(f"app.endpoints.{module_info.name}")
+        module = importlib.import_module(f"endpoints.{module_info.name}")
 
         router = getattr(module, "router", None)
         if router is not None:
