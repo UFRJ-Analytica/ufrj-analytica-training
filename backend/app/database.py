@@ -19,11 +19,20 @@ def get_connection() -> sqlite3.Connection:
 
 
 def query(sql: str, params: tuple = ()) -> list[dict]:
-    """Executa um SELECT e retorna uma lista de dicts."""
+    """ Executa um SELECT e retorna uma lista de dicts """
     conn = get_connection()
     try:
         cursor = conn.execute(sql, params)
         rows = cursor.fetchall()
         return [dict(row) for row in rows]
+    finally:
+        conn.close()
+
+def execute(sql: str, params: tuple = ()):
+    """ EXECUTA INSERT, DELETE E UPDATE """
+    conn = get_connection()
+    try:
+        conn.execute(sql, params)
+        conn.commit()
     finally:
         conn.close()

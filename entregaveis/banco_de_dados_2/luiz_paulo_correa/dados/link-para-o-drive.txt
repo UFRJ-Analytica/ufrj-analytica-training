@@ -1,0 +1,5 @@
+Para executar o código, faça o download da pasta do drive localizado em:
+
+https://drive.google.com/drive/folders/1cz4pZrHGCSVgy0nAkbzjnZKcgt1hgC7z?usp=drive_link
+
+e adicione os arquivos na pasta dados. Não coloque a pasta inteira, apenas os arquivos.
