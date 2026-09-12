@@ -1,6 +1,6 @@
-Entregável — Orquestração de IA
+# Entregável — Orquestração de IA
 
-Objetivo
+## Objetivo
 
 Nesta capacitação, cada trainee deverá desenvolver uma aplicação de Inteligência Artificial utilizando LLM, LangGraph, FastAPI, Streamlit e ChromaDB.
 
@@ -12,6 +12,7 @@ O projeto será desenvolvido incrementalmente em três entregáveis:
 
 Ao final, a arquitetura deverá seguir aproximadamente o seguinte fluxo:
 
+```
 Usuário
   ↓
 Streamlit
@@ -26,10 +27,10 @@ LangGraph Agent
       ChromaDB
          ↓
     Base de conhecimento
-
+```
 ⸻
 
-Preparação do ambiente
+## Preparação do ambiente
 
 Cada trainee deverá criar uma API Key para utilizar um modelo de linguagem.
 
@@ -47,12 +48,14 @@ As credenciais devem ser armazenadas através de variáveis de ambiente.
 
 Neste projeto, o backend lê o arquivo:
 
-backend/.env
+`backend/.env`
 
 Exemplo de conteúdo:
 
+```
 GEMINI_API_KEY=sua_chave
 AGENTE_TESTE_MODEL=gemini-2.5-flash
+```
 
 É proibido realizar commit de API Keys no repositório.
 
@@ -98,9 +101,9 @@ http://127.0.0.1:8501/agente_teste
 
 ⸻
 
-Entregável 1 — Agente + FastAPI
+## Entregável 1 — Agente + FastAPI
 
-Objetivo
+### Objetivo
 
 Construir um agente utilizando LangGraph e disponibilizá-lo através de um endpoint no backend FastAPI do projeto.
 
@@ -126,6 +129,7 @@ O código do agente deve ficar separado da camada HTTP.
 
 Estrutura sugerida:
 
+```
 backend/
 └── app/
     ├── agents/
@@ -133,6 +137,7 @@ backend/
     │
     └── endpoints/
         └── nome_sobrenome_agent.py
+```
 
 O arquivo dentro de agents/ será responsável pela implementação e configuração do agente.
 
@@ -142,19 +147,23 @@ Endpoint
 
 Criar pelo menos um endpoint:
 
-POST /agent/<nome-do-agente>/chat
+`POST /agent/<nome-do-agente>/chat`
 
 Exemplo de request:
 
+```json
 {
   "message": "Analise estes dados para mim"
 }
+```
 
 Exemplo de response:
 
+```json
 {
   "response": "Resultado produzido pelo agente."
 }
+```
 
 O endpoint deverá ser testável inicialmente através do Swagger do FastAPI.
 
@@ -162,21 +171,21 @@ Antes de iniciar o frontend, certifique-se de que o agente funciona diretamente 
 
 ⸻
 
-Entregável 2 — Interface de Chat
+## Entregável 2 — Interface de Chat
 
-Objetivo
+### Objetivo
 
 Construir uma página Streamlit que permita conversar com o agente criado no Entregável 1.
 
 Cada trainee deverá criar seu próprio arquivo seguindo obrigatoriamente o padrão:
 
-pages/nome_sobrenome_chat.py
+`pages/nome_sobrenome_chat.py`
 
 Exemplo:
 
-pages/joao_silva_chat.py
+`pages/joao_silva_chat.py`
 
-Requisitos da interface
+### Requisitos da interface
 
 A página deverá possuir:
 
@@ -194,10 +203,11 @@ A página deverá possuir:
 
 O histórico da conversa deverá permanecer disponível durante a sessão utilizando:
 
-st.session_state
+`st.session_state`
 
 Estrutura conceitual:
 
+```json
 [
     {
         "role": "user",
@@ -208,13 +218,15 @@ Estrutura conceitual:
         "content": "Olá! Como posso ajudar?"
     }
 ]
+```
 
-Comunicação com backend
+### Comunicação com backend
 
 O Streamlit NÃO deverá executar diretamente o agente.
 
 O fluxo obrigatório será:
 
+```
 Streamlit
     ↓
 HTTP Request
@@ -228,14 +240,15 @@ LLM
 FastAPI
     ↓
 Streamlit
+```
 
 Dessa forma, frontend e backend permanecem desacoplados.
 
 ⸻
 
-Entregável 3 — ChromaDB + Embeddings + RAG
+## Entregável 3 — ChromaDB + Embeddings + RAG
 
-Objetivo
+### Objetivo
 
 Adicionar uma base de conhecimento ao agente utilizando uma Vector Database.
 
@@ -243,8 +256,9 @@ Será utilizado o ChromaDB executado através do Docker.
 
 O trainee deverá selecionar conteúdos relacionados ao domínio do agente criado no Entregável 1.
 
-Exemplos:
+### Exemplos:
 
+```
 Agente Financeiro
 ↓
 documentos sobre finanças
@@ -257,10 +271,11 @@ documentação de Pandas
 Agente de Saúde
 ↓
 documentos públicos sobre saúde
+```
 
 ⸻
 
-ChromaDB
+### ChromaDB
 
 O ChromaDB deverá ser executado através de container Docker.
 
@@ -278,10 +293,11 @@ O agente deverá efetivamente recuperar informações armazenadas nele.
 
 ⸻
 
-Pipeline de ingestão
+### Pipeline de ingestão
 
 O conteúdo escolhido deverá passar pelo seguinte pipeline:
 
+```
 Documento
    ↓
 Document Loader
@@ -295,18 +311,20 @@ Embedding Model
 Vetores
    ↓
 ChromaDB
+```
 
 Cada chunk deverá possuir, quando aplicável:
 
-texto
-embedding
-metadata
-fonte
+- texto
+- embedding
+- metadata
+- fonte
 
 O trainee deverá definir uma estratégia de divisão dos documentos.
 
 Exemplo conceitual:
 
+```
 Documento com 20 páginas
         ↓
 Text Splitter
@@ -319,15 +337,17 @@ Chunk 3
 Embeddings
         ↓
 ChromaDB
+```
 
 ⸻
 
-Retrieval
+### Retrieval
 
 Após a ingestão, a aplicação deverá permitir uma busca semântica.
 
 Fluxo:
 
+```
 Pergunta do usuário
         ↓
 Embedding da pergunta
@@ -337,17 +357,19 @@ Vector Search
 ChromaDB
         ↓
 Top K documentos
+```
 
 O trainee deverá demonstrar que uma pergunta semanticamente relacionada ao conteúdo recupera documentos relevantes.
 
 ⸻
 
-RAG
+### RAG
 
 Após validar o Retrieval, ele deverá ser conectado ao agente.
 
 Fluxo final:
 
+```
 Pergunta
    ↓
 Retriever
@@ -363,6 +385,7 @@ LangGraph Agent
 LLM
    ↓
 Resposta
+```
 
 O agente deverá utilizar os documentos recuperados como contexto para produzir sua resposta.
 
@@ -370,7 +393,7 @@ Quando a resposta depender da base de conhecimento, o agente não deverá invent
 
 ⸻
 
-10 sugestões de agentes
+### 10 sugestões de agentes
 
 Cada trainee deverá escolher um agente diferente sempre que possível.
 
@@ -532,10 +555,11 @@ metodologia dos indicadores
 
 ⸻
 
-Estrutura final esperada
+### Estrutura final esperada
 
 Ao final dos três entregáveis, a aplicação deverá possuir aproximadamente:
 
+```
 project/
 │
 ├── pages/
@@ -552,17 +576,20 @@ project/
 ├── docker-compose.yml
 │
 └── .env
+```
 
 Além disso:
 
+```
 Docker
 └── ChromaDB
+```
 
 ⸻
 
-Critérios de avaliação
+## Critérios de avaliação
 
-Entregável 1
+### Entregável 1
 
 Será avaliado:
 
@@ -576,7 +603,7 @@ Será avaliado:
 * funcionamento do endpoint FastAPI;
 * separação entre agente e endpoint.
 
-Entregável 2
+### Entregável 2
 
 Será avaliado:
 
@@ -590,7 +617,7 @@ Será avaliado:
 * tratamento de loading e erros;
 * utilização adequada de st.session_state.
 
-Entregável 3
+### Entregável 3
 
 Será avaliado:
 
@@ -607,7 +634,7 @@ Será avaliado:
 
 ⸻
 
-Regras
+### Regras
 
 1. Não realizar commit de API Keys ou outros secrets.
 2. Não colocar o agente diretamente dentro da página Streamlit.
@@ -622,10 +649,11 @@ Regras
 
 ⸻
 
-Resultado esperado
+### Resultado esperado
 
 Ao final da capacitação, cada trainee deverá ser capaz de explicar e demonstrar:
 
+```
 LLM
 ↓
 Prompt Engineering
@@ -655,6 +683,7 @@ Vector Database
 Retrieval
 ↓
 RAG
+```
 
 O objetivo não é apenas construir um chatbot.
 

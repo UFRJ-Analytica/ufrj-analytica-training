@@ -36,3 +36,15 @@ def execute(sql: str, params: tuple = ()):
         conn.commit()
     finally:
         conn.close()
+
+def alter(sql: str, params: tuple = ()):
+    """Executa um INSERT e retorna se foi bem sucessido"""
+    conn = get_connection()
+    try:
+        conn.execute(sql, params)
+        conn.commit()
+        return {"success": True, 'detail': ''}
+    except Exception as e:
+        return {"success": False, 'detail': ""}
+    finally:
+        conn.close()
