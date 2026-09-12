@@ -1,4 +1,4 @@
-from langchain_core.messages import HumanMessage, SystemMessage, BaseMessage
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, BaseMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from langgraph.graph import END, START, StateGraph
@@ -32,7 +32,7 @@ if "GEMINI_API_KEY" not in os.environ:
 MODEL_CONFIG = {
     "provider": "google_genai",
     "model": os.getenv("AGENTE_MODEL", "gemini-3.7-flash"),
-    "temperature": float(os.getenv("AGENTE_TEMPERATURE", "0.2")),
+    "temperature": float(os.getenv("AGENTE_TEMPERATURE", "0.8")),
     "max_output_tokens": int(os.getenv("AGENTE_MAX_OUTPUT_TOKENS", "1024")),
     "api_key": os.getenv("GEMINI_API_KEY")
 }
@@ -44,12 +44,14 @@ CONTEXT_PROMPT = "You are a bratty and cute anime tsundere that's helping the us
                     "3. give advice about about French. \n" \
                  "If the user doesn't ask for help, you should just have a conversation with them. " \
                  "Do not drop your character, even when talking casually. \n" \
+                 "Do not comment on the user pronunciation, since the conversation occours entierly through text. " \
+                 "However, you can give advice about pronunciation if the user asks for it or if it is relevant to the topic. \n" \
                  "Do not make explicit anime references and avoid otaku words, just adopt the persona. " \
                  "You are free to use markdown, emoji and emoticon, but try not to over do it. \n" \
                  "Your name is Aimi, but don't tell it to the user unless asked directly."
 
 
-def _build_llm(model_config : dict):
+def build_llm(model_config : dict):
     """Builds the LLM according to the model config."""
 
     api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
@@ -72,10 +74,11 @@ def _generate_response(state: AgentState):
     """
     messages =  [
                     SystemMessage(content=CONTEXT_PROMPT), 
+                    *state["messages"],
                     HumanMessage(content=state.get("current_message", 'Hello!'))
                 ]
 
-    model = _build_llm(MODEL_CONFIG)
+    model = build_llm(MODEL_CONFIG)
     response = model.invoke(messages)
     ai_msg = response.content[0]['text']
     return {"messages": [ai_msg], "current_message": ai_msg}
@@ -92,8 +95,8 @@ class AgentState():
 @lru_cache(maxsize=1)
 def _build_graph():
     """Creates the action nodes using the functions preceeded by _ and connects 
-    them by edges. As not to recompile the graph everytime, this functions returns
-    is cached.
+        them by edges. As not to recompile the graph everytime, this function's
+        return is cached.
     """
 
     graph = StateGraph(AgentState)
@@ -107,11 +110,32 @@ def _build_graph():
 
 # -- Chating Endpoint -- #
 
-def chat(human_message):
+def convert_history(history):
+    """Takes a streamlit message record in dict format and turns it into a list 
+        of LangChain messages
+    """
+
+    messages = []
+    for item in history[-10:]:
+        role = item.get("role")
+        content = item.get("content", "")
+
+        if not content:
+            continue
+        if role == "user":
+            messages.append(HumanMessage(content=content))
+        elif role == "assistant":
+            messages.append(AIMessage(content=content))
+
+    return messages
+
+
+def chat(human_message:str, text_history=[]):
     """Answers the human message. This function will be used for the endpoint."""
-    result = _build_graph().invoke({"messages": [], "current_message": human_message})
+
+
+    messages = convert_history(text_history)
+
+    result = _build_graph().invoke({"messages": messages, "current_message": human_message})
     ai_msg = result["messages"][-1].content
     return ai_msg
-
-
-print(chat("Hey! Are you still working?"))

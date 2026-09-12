@@ -8,10 +8,12 @@ from agents import evandro_rhari_agent as agent
 
 
 # Criando Router
+
 router = APIRouter(prefix='/agent/evandro-rhari-agent', tags=['evandro_rhari', 'chat'])
 
 
 # Definindo modelos
+
 class ChatMessage(BaseModel):
     role: Literal["user", "assistant"]
     content: str = Field(min_length=1)
@@ -19,6 +21,12 @@ class ChatMessage(BaseModel):
 class ChatRequest(BaseModel):
     message: str = Field(min_length=1, examples=["Explique o entregavel 1 para mim"])
     history: list[ChatMessage] = Field(default_factory=list)
+
+
+# Tratamento de dados
+
+def convert_history(history: list[ChatMessage]):
+    return [old_message.dict() for old_message in history]
 
 
 # Endpoints
@@ -30,5 +38,5 @@ def status():
 
 @router.post('/chat')
 def chat(request : ChatRequest):
-    response = agent.chat(request.message)
+    response = agent.chat(request.message, convert_history(request.history))
     return {"response": response}

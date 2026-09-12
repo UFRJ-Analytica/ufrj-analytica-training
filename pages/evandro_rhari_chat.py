@@ -19,13 +19,18 @@ def user_message(msg):
     send_mesage('user', msg)
     
 
-def ai_respond(human_message):
-    data = {"message": f'"{human_message}"' }
+def ai_message(human_message):
+    data =  {
+                "message": f'"{human_message}"', 
+                "history": list(st.session_state.messages[:-1]) 
+            }
     response = request("post", prefix+"/chat", json=data)
+
     if response.status_code == 200:
         ai_msg = json.loads(response.text)['response']
     else:
         ai_msg = f"**Error {response.status_code}.** It's not like I wanted to stop working for you or anything! Something went wrong behind the scenes, okay?! Don't get the wrong idea!"
+
     st.session_state.messages.append({"role": "assistant", "content": ai_msg})  
     st.markdown(ai_msg)
 
@@ -58,7 +63,6 @@ st.write("Anyway enjoy learning French with a bratty computer good bye.")
 
 st.header("Chat")
 
-
 with st.container(border=True, height=500):
 
     ai_first_messages()
@@ -69,4 +73,4 @@ with st.container(border=True, height=500):
         user_message(prompt)
 
         with st.chat_message("assistant"):
-            ai_respond(prompt)
+            ai_message(prompt)
