@@ -15,46 +15,29 @@ class Regiao(BaseModel):
 
 class Estado(BaseModel):
     id_uf: int
-    nome_uf: str
     sigla_uf: str
+    nome_uf: str
     id_regiao: int
 
 class Municipio(BaseModel):
-    nome_municipio: str
-    nome_uf: str
-    populacao: int
-
-class Populacao(BaseModel):
-    nome: str
-    total: int
-
-class Dispersao(BaseModel):
-    nome: str
-    media: float
-    quant: int
-    id_regiao: int
-
-class PorteRegiao(BaseModel):
-    nome_regiao: str
-    pequeno: int
-    medio: int
-    grande: int
-
-class MedidasResumo(BaseModel):
-    municipios: int
-    estados: int
-    populacao_total: int
-    ano: int
-    maior_municipio: str
-
-class DetalheMunicipio(BaseModel):
-    id_municipio: int
+    id_municipio: int = 0
     nome_municipio: str
     id_uf: int
-    valor: int
 
-class Registro(BaseModel):
-    id_registro: int
-    id_municipio: int
-    observacao: str
+class MunicipioUpdate(BaseModel):
+    id_municipio: int = 0
+    nome_municipio: str = None
+    id_uf: int = None
+
+class CadastroMunicipal(BaseModel):
+    status_atual: str
+    prioridade: str
     responsavel: str
+    id_municipio: int
+
+class CadastroMunicipalUpdate(BaseModel):
+    id_cadastro_municipal: int = 0
+    status_atual: str = None
+    prioridade: str = None
+    responsavel: str = None
+    id_municipio: int = None
