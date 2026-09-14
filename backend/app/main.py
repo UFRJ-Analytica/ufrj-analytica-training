@@ -8,19 +8,32 @@ O restante são stubs. Veja o tarefa.md para entender o que cada grupo
 de endpoints precisa fazer.
 
 Para rodar:
-    uvicorn app.main:app --reload
+    python -m uvicorn backend.app.main:app --reload
 
 Depois acesse a documentação interativa em http://127.0.0.1:8000/docs
 """
 import importlib
+import logging
 import pkgutil
+import sys
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
-import endpoints
-from database import query
-from schemas import Regiao
+APP_DIR = Path(__file__).resolve().parent
+BACKEND_DIR = APP_DIR.parent
+if str(BACKEND_DIR) not in sys.path:
+    sys.path.insert(0, str(BACKEND_DIR))
+if str(APP_DIR) not in sys.path:
+    sys.path.insert(1, str(APP_DIR))
+
+from app import endpoints
+from app.database import query
+from app.schemas import Regiao
+
+logger = logging.getLogger(__name__)
+ENDPOINT_IMPORT_ERRORS: list[dict[str, str]] = []
 
 app = FastAPI(
     title="UFRJ Analytica - Sistema de Acompanhamento Populacional",
@@ -39,7 +52,22 @@ app.add_middleware(
 def incluir_endpoints_dos_trainees() -> None:
     """Importa automaticamente rotas criadas em app/endpoints/*.py."""
     for module_info in pkgutil.iter_modules(endpoints.__path__):
-        module = importlib.import_module(f"endpoints.{module_info.name}")
+        try:
+            module = importlib.import_module(f"app.endpoints.{module_info.name}")
+        except Exception as exc:
+            ENDPOINT_IMPORT_ERRORS.append(
+                {
+                    "module": module_info.name,
+                    "error": f"{type(exc).__name__}: {exc}",
+                }
+            )
+            logger.warning(
+                "Endpoint ignorado por erro de import: %s (%s: %s)",
+                module_info.name,
+                type(exc).__name__,
+                exc,
+            )
+            continue
 
         router = getattr(module, "router", None)
         if router is not None:
@@ -59,6 +87,11 @@ incluir_endpoints_dos_trainees()
 @app.get("/", tags=["status"])
 def root():
     return {"status": "ok", "mensagem": "API no ar. Veja /docs para a documentação."}
+
+
+@app.get("/debug/endpoint-import-errors", tags=["debug"])
+def endpoint_import_errors():
+    return ENDPOINT_IMPORT_ERRORS
 
 
 # ---------------------------------------------------------------------------

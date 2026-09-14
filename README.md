@@ -23,11 +23,17 @@ GEMINI_API_KEY=sua_chave
 AGENTE_TESTE_MODEL=gemini-2.5-flash
 ```
 
-Rode o backend FastAPI em um terminal:
+Rode o backend FastAPI em um terminal, a partir da raiz do projeto.
 
+macOS/Linux:
 ```bash
-cd backend
-../.venv/bin/uvicorn app.main:app --reload
+.venv/bin/python -m uvicorn backend.app.main:app --reload
+```
+
+Windows PowerShell:
+
+```powershell
+.venv\Scripts\python -m uvicorn backend.app.main:app --reload
 ```
 
 Swagger do backend:
@@ -36,10 +42,17 @@ Swagger do backend:
 http://127.0.0.1:8000/docs
 ```
 
-Rode o Streamlit em outro terminal, a partir da raiz do projeto:
+Rode o Streamlit em outro terminal, a partir da raiz do projeto.
 
+macOS/Linux:
 ```bash
-streamlit run app.py
+.venv/bin/python -m streamlit run app.py
+```
+
+Windows PowerShell:
+
+```powershell
+.venv\Scripts\python -m streamlit run app.py
 ```
 
 Página do agente:

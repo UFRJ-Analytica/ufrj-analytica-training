@@ -69,11 +69,17 @@ source .venv/bin/activate
 pip install -r requirements.txt -r backend/requirements.txt
 ```
 
-Rodar o backend FastAPI, a partir da raiz do projeto:
+Rodar o backend FastAPI, a partir da raiz do projeto.
 
+macOS/Linux:
 ```bash
-cd backend
-../.venv/bin/uvicorn app.main:app --reload
+.venv/bin/python -m uvicorn backend.app.main:app --reload
+```
+
+Windows PowerShell:
+
+```powershell
+.venv\Scripts\python -m uvicorn backend.app.main:app --reload
 ```
 
 Depois acesse o Swagger em:
@@ -88,11 +94,17 @@ curl -X POST http://127.0.0.1:8000/agent/agente-teste/chat \
   -d '{"message":"Explique o entregavel 1"}'
 ```
 
-Rodar o frontend Streamlit, em outro terminal, a partir da raiz do projeto:
+Rodar o frontend Streamlit, em outro terminal, a partir da raiz do projeto.
 
+macOS/Linux:
 ```bash
-source .venv/bin/activate
-streamlit run app.py
+.venv/bin/python -m streamlit run app.py
+```
+
+Windows PowerShell:
+
+```powershell
+.venv\Scripts\python -m streamlit run app.py
 ```
 
 A página do agente fica disponível pelo menu lateral do Streamlit ou direto em:
