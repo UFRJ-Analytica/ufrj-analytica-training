@@ -1,0 +1,48 @@
+-- normalizacao.sql
+-- Crie aqui as tabelas normalizadas e popule a partir das tabelas raw_.
+
+PRAGMA foreign_keys = ON;
+
+-- Exemplo de estrutura esperada:
+-- DROP TABLE IF EXISTS ...
+-- CREATE TABLE ...
+-- INSERT INTO ... SELECT ...
+
+PRAGMA foreign_keys = ON;
+
+DROP TABLE IF EXISTS regioes;
+DROP TABLE IF EXISTS estados;
+DROP TABLE IF EXISTS municipios;
+DROP TABLE IF EXISTS populacao_municipal;
+
+CREATE TABLE regioes (
+    id_regiao INTEGER PRIMARY KEY,
+    sigla_regiao TEXT NOT NULL,
+    nome_regiao TEXT NOT NULL
+);
+
+CREATE TABLE estados (
+    id_uf INTEGER PRIMARY KEY,
+    sigla_uf TEXT NOT NULL,
+    nome_uf TEXT NOT NULL,
+    id_regiao INTEGER NOT NULL,
+    FOREIGN KEY (id_regiao) REFERENCES regioes(id_regiao)
+);
+
+CREATE TABLE municipios (
+    id_municipio INTEGER PRIMARY KEY,
+    nome_municipio TEXT NOT NULL,
+    id_uf INTEGER NOT NULL,
+    FOREIGN KEY (id_uf) REFERENCES estados(id_uf)
+);
+
+CREATE TABLE populacao_municipal (
+    id INTEGER PRIMARY KEY,
+    id_municipio INTEGER NOT NULL,
+    ano INTEGER NOT NULL,
+    indicador TEXT NOT NULL,
+    valor REAL NOT NULL,
+    unidade TEXT NOT NULL,
+    fonte TEXT NOT NULL,
+    FOREIGN KEY (id_municipio) REFERENCES municipios(id_municipio)
+);

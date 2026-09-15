@@ -2,6 +2,10 @@
 
 Base inicial de um app Streamlit para apresentar equipe e projetos do treinamento.
 
+<div align="center">
+  <img src="media/diagrama-importante.png" width="250" alt="Diagrama importante sobre o projeto">
+</div>
+
 ## Como rodar
 
 ```bash
@@ -16,4 +20,5 @@ streamlit run app.py
 - `data/*.csv`: dados de exemplo.
 
 
+# Contiue
 # Continue
