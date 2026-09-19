@@ -37,3 +37,5 @@ entregaveis/banco_de_dados/data/
 
 # Ignora todos os arquivos CSV dentro da pasta de entregas de Banco de Dados 2
 entregaveis/banco_de_dados_2/**/*.csv
+#Ignorar o database.db
+database.db
