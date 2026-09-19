@@ -8,6 +8,7 @@ WORKDIR /workdir
 COPY requirements.txt .
 COPY app.py .
 COPY pages ./pages/
+COPY data ./data/
 
 # instalar as dependências do frontend;
 RUN pip install --upgrade pip
