@@ -6,7 +6,7 @@ endpoints de análise e de cadastro) ficam por conta de vocês, conforme
 forem implementando cada rota.
 """
 from pydantic import BaseModel
-
+from typing import Optional
 
 class Regiao(BaseModel):
     id_regiao: int
@@ -41,3 +41,91 @@ class CadastroMunicipalUpdate(BaseModel):
     prioridade: str = None
     responsavel: str = None
     id_municipio: int = None
+
+
+# ---- Análise --------------------------------------------------------------
+class MunicipioMaisPopuloso(BaseModel):
+    municipio: str
+    uf: str
+    populacao: int
+
+
+class KPIs(BaseModel):
+    total_municipios: int
+    total_estados: int
+    populacao_total: int
+    ano_referencia: Optional[int] = None
+    municipio_mais_populoso: Optional[MunicipioMaisPopuloso] = None
+
+
+class MunicipioPopulacao(BaseModel):
+    id_municipio: int
+    municipio: str
+    uf: str
+    populacao: int
+
+
+class RegiaoPopulacao(BaseModel):
+    regiao: str
+    populacao: int
+
+
+class EstadoPopulacao(BaseModel):
+    uf: str
+    estado: str
+    regiao: str
+    populacao: int
+
+
+class DispersaoEstado(BaseModel):
+    uf: str
+    estado: str
+    regiao: str
+    qtd_municipios: int
+    populacao_media: float
+
+
+class RegiaoPorte(BaseModel):
+    regiao: str
+    porte: str
+    quantidade: int
+
+
+# ---- Município (dados básicos) — entrada ----------------------------------
+class MunicipioCreate(BaseModel):
+    nome: str
+    uf: str
+    populacao: int
+
+
+class MunicipioUpdate(BaseModel):
+    nome: str
+    uf: str
+    populacao: int
+
+
+# ---- Cadastro (anotações do gestor) ---------------------------------------
+class AcompanhamentoCreate(BaseModel):
+    id_municipio: int
+    status: str = "monitorando"
+    prioridade: str = "media"
+    observacao: Optional[str] = None
+    responsavel: Optional[str] = None
+
+
+class AcompanhamentoUpdate(BaseModel):
+    status: str
+    prioridade: str
+    observacao: Optional[str] = None
+    responsavel: Optional[str] = None
+
+
+class Acompanhamento(BaseModel):
+    id: int
+    id_municipio: int
+    municipio: Optional[str] = None
+    status: str
+    prioridade: str
+    observacao: Optional[str] = None
+    responsavel: Optional[str] = None
+    atualizado_em: Optional[str] = None
