@@ -29,5 +29,18 @@ node_modules/
 # Logs locais
 *.log
 
+<<<<<<< HEAD
 #dados do ibge para o BD
 entregaveis/banco_de_dados/data/
+=======
+# Arquivos de configuracao do VS Code
+.vscode/
+
+# dados do ibge para o BD
+entregaveis/banco_de_dados/data/
+
+# Ignora todos os arquivos CSV dentro da pasta de entregas de Banco de Dados 2
+entregaveis/banco_de_dados_2/**/*.csv
+#Ignorar o database.db
+database.db
+>>>>>>> b3baac8b0d01a6382af21439aed27e6b4b0389bc
