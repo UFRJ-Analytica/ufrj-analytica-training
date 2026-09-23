@@ -129,3 +129,78 @@ class Acompanhamento(BaseModel):
     observacao: Optional[str] = None
     responsavel: Optional[str] = None
     atualizado_em: Optional[str] = None
+
+# ---- Endpoints Felipe Indio -------------------------------------------
+
+class ResumoEstatistico(BaseModel):
+    total_municipios: int
+    total_estados: int
+    populacao_total: int
+    ano_referencia: Optional[int] = None
+    municipio_mais_populoso: str
+
+
+class TopMunicipio(BaseModel):
+    nome_municipio: str
+    sigla_uf: str
+    populacao: int
+
+
+class PopulacaoRegiao(BaseModel):
+    nome_regiao: str
+    populacao_total: int
+
+
+class PopulacaoUF(BaseModel):
+    sigla_uf: str
+    populacao_total: int
+
+
+class DistribuicaoPopulacao(BaseModel):
+    nome_municipio: str
+    populacao: int
+
+
+class DispersaoUF(BaseModel):
+    sigla_uf: str
+    id_regiao: int
+    qtd_municipios: int
+    media_populacao: float
+
+
+class HeatmapPorte(BaseModel):
+    nome_regiao: str
+    porte: str
+    quantidade: int
+
+
+class DetalheMunicipio(BaseModel):
+    id_municipio: int
+    nome_municipio: str
+    sigla_uf: str
+    nome_regiao: str
+    populacao: Optional[int] = None
+    ano_referencia: Optional[int] = None
+
+
+class Registro(BaseModel):
+    id_registro: int
+    id_municipio: int
+    status: str
+    prioridade: str
+    observacao: Optional[str] = None
+    responsavel: str
+
+
+class RegistroCreate(BaseModel):
+    status: str
+    prioridade: str
+    observacao: Optional[str] = None
+    responsavel: str
+
+
+class RegistroUpdate(BaseModel):
+    status: Optional[str] = None
+    prioridade: Optional[str] = None
+    observacao: Optional[str] = None
+    responsavel: Optional[str] = None
