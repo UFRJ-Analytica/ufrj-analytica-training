@@ -1,0 +1,16 @@
+# Ambientes virtuais e caches locais
+venv/
+.venv/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Segredos e bancos locais (o banco entra por volume no docker run)
+.env
+.env.*
+*.db
+
+# Arquivos Docker
+Dockerfile
+.dockerignore
