@@ -1,0 +1,28 @@
+# Controle de versão, ambientes e caches
+.git/
+.venv/
+venv/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+.vscode/
+
+# Segredos
+.env
+.env.*
+.streamlit/secrets.toml
+
+# O frontend não usa o backend nem as entregas
+backend/
+entregaveis/
+
+# Banco local (a tela consome só a API)
+*.db
+
+# Arquivos Docker e briefings
+Dockerfile
+compose.yaml
+docker-compose.yml
+.dockerignore
+BRIEFING_*.md

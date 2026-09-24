@@ -5,12 +5,15 @@ Consome só a API (backend/app/endpoints/isaac_vianna.py) via requests, nunca
 acessa o database.db direto. Duas áreas: análise (gráficos) e cadastro
 (CRUD de município + CRUD das anotações do gestor).
 """
+import os
+
 import pandas as pd
 import plotly.express as px
 import requests
 import streamlit as st
 
-API_ROOT = "http://127.0.0.1:8000"
+# Local: 127.0.0.1. No Docker: definido via BASE_URL (mesma variável do pages/giovanni_almeida.py)
+API_ROOT = os.getenv("BASE_URL", "http://127.0.0.1:8000").rstrip("/")
 API_BASE = f"{API_ROOT}/isaac-vianna"
 
 
@@ -20,7 +23,7 @@ def api_get(path: str, params: dict | None = None, base: str = API_BASE):
         resp.raise_for_status()
         return resp.json()
     except requests.exceptions.ConnectionError:
-        st.error("Não consegui falar com a API. Ela está rodando em http://127.0.0.1:8000?")
+        st.error(f"Não consegui falar com a API. Ela está rodando em {API_ROOT}?")
         return None
     except requests.exceptions.HTTPError:
         st.error(f"Erro da API: {resp.json().get('detail', resp.text)}")
@@ -33,7 +36,7 @@ def api_write(metodo: str, path: str, json: dict | None = None):
         resp.raise_for_status()
         return resp.json() if resp.content else True
     except requests.exceptions.ConnectionError:
-        st.error("Não consegui falar com a API. Ela está rodando em http://127.0.0.1:8000?")
+        st.error(f"Não consegui falar com a API. Ela está rodando em {API_ROOT}?")
         return None
     except requests.exceptions.HTTPError:
         st.error(f"Erro da API: {resp.json().get('detail', resp.text)}")
