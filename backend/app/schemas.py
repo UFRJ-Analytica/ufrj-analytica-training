@@ -69,3 +69,41 @@ class HeatmapRegiaoPorte(BaseModel):
     porte: str
     quantidade: int
 
+
+class MunicipioCreate(BaseModel):
+    nome_municipio: str
+    id_uf: int
+    populacao: float
+
+class MunicipioUpdate(BaseModel):
+    nome_municipio: str | None = None
+    id_uf: int | None = None
+    populacao: float | None = None
+
+class MunicipioComPopulacao(BaseModel):
+    id_municipio: int
+    nome_municipio: str
+    id_uf: int
+    populacao: float
+
+class RegistroGestorCreate(BaseModel):
+    status: str | None = None
+    prioridade: str | None = None
+    observacao: str | None = None
+    responsavel: str | None = None
+
+class RegistroGestorUpdate(BaseModel):
+    status: str | None = None
+    prioridade: str | None = None
+    observacao: str | None = None
+    responsavel: str | None = None
+
+class RegistroGestor(BaseModel):
+    id_registro: int
+    id_municipio: int
+    status: str | None
+    prioridade: str | None
+    observacao: str | None
+    responsavel: str | None
+    data_registro: str
+

@@ -9,9 +9,15 @@ from app.schemas import (
     PopulacaoPorEstado,
     DispersaoEstado,
     HeatmapRegiaoPorte,
+    MunicipioCreate,
+    MunicipioUpdate,
+    MunicipioComPopulacao,
+    RegistroGestorCreate,
+    RegistroGestorUpdate,
+    RegistroGestor,
 )
 
-from app.database import query
+from app.database import query, get_connection
 
 router = APIRouter(prefix="/luiz-paulo", tags=["luiz_paulo"])
 
@@ -177,3 +183,170 @@ def heatmap_regiao_porte():
         ORDER BY r.nome_regiao, porte
         """
     )
+
+#CRUD de município 
+
+def _execute(sql: str, params: tuple = ()) -> int:
+    """executa um INSERT/UPDATE/DELETE com FK. comita, e devolve
+    cursor.lastrowid."""
+    conn = get_connection()
+    try:
+        conn.execute("PRAGMA foreign_keys = ON")
+        cursor = conn.execute(sql, params)
+        conn.commit()
+        return cursor.lastrowid
+    finally:
+        conn.close()
+
+def _ano_referencia() -> int:
+    return query("SELECT MAX(ano) AS ano FROM populacao_municipal")[0]["ano"]
+
+
+def _buscar_municipio_com_populacao(id_municipio: int) -> dict | None:
+    rows = query(
+        """
+        SELECT m.id_municipio, m.nome_municipio, m.id_uf,
+               COALESCE(p.valor, 0) AS populacao
+        FROM municipios m
+        LEFT JOIN populacao_municipal p
+            ON p.id_municipio = m.id_municipio AND p.ano = ?
+        WHERE m.id_municipio = ?
+        """,
+        (_ano_referencia(), id_municipio),
+    )
+    return rows[0] if rows else None
+
+
+@router.post("/municipios", response_model=MunicipioComPopulacao, status_code=201)
+def criar_municipio(dados: MunicipioCreate):
+    if not query("SELECT id_uf FROM estados WHERE id_uf = ?", (dados.id_uf,)): # testa se o estado existe
+        raise HTTPException(status_code=404, detail="Estado (id_uf) não encontrado")
+
+    novo_id = query("SELECT MAX(id_municipio) AS max_id FROM municipios")[0]["max_id"] + 1
+    ano = _ano_referencia()
+
+    _execute(
+        "INSERT INTO municipios (id_municipio, nome_municipio, id_uf) VALUES (?, ?, ?)",
+        (novo_id, dados.nome_municipio, dados.id_uf),
+    )
+    _execute(
+        """
+        INSERT INTO populacao_municipal (id_municipio, ano, indicador, valor, unidade, fonte)
+        VALUES (?, ?, 'populacao_residente_estimada', ?, 'pessoas', 'cadastro manual')
+        """,
+        (novo_id, ano, dados.populacao),
+    )
+    return _buscar_municipio_com_populacao(novo_id)
+
+
+@router.put("/municipios/{id_municipio}", response_model=MunicipioComPopulacao)
+def atualizar_municipio(id_municipio: int, dados: MunicipioUpdate):
+    atual = _buscar_municipio_com_populacao(id_municipio)
+    if atual is None:
+        raise HTTPException(status_code=404, detail="Município não encontrado")
+
+    if dados.id_uf is not None and not query("SELECT id_uf FROM estados WHERE id_uf = ?", (dados.id_uf,)):
+        raise HTTPException(status_code=404, detail="Estado (id_uf) não encontrado")
+
+    novo_nome = dados.nome_municipio if dados.nome_municipio is not None else atual["nome_municipio"]
+    novo_uf = dados.id_uf if dados.id_uf is not None else atual["id_uf"]
+    _execute(
+        "UPDATE municipios SET nome_municipio = ?, id_uf = ? WHERE id_municipio = ?",
+        (novo_nome, novo_uf, id_municipio),
+    )
+
+    if dados.populacao is not None:
+        _execute(
+            """
+            INSERT INTO populacao_municipal (id_municipio, ano, indicador, valor, unidade, fonte)
+            VALUES (?, ?, 'populacao_residente_estimada', ?, 'pessoas', 'cadastro manual')
+            ON CONFLICT(id_municipio, ano) DO UPDATE SET valor = excluded.valor
+            """,
+            (id_municipio, _ano_referencia(), dados.populacao),
+        )
+
+    return _buscar_municipio_com_populacao(id_municipio)
+
+
+@router.delete("/municipios/{id_municipio}")
+def remover_municipio(id_municipio: int):
+    if not query("SELECT id_municipio FROM municipios WHERE id_municipio = ?", (id_municipio,)):
+        raise HTTPException(status_code=404, detail="Município não encontrado")
+
+    _execute("DELETE FROM registros_gestor WHERE id_municipio = ?", (id_municipio,))
+    _execute("DELETE FROM populacao_municipal WHERE id_municipio = ?", (id_municipio,))
+    _execute("DELETE FROM municipios WHERE id_municipio = ?", (id_municipio,))
+    return {"status": "ok", "mensagem": f"Município {id_municipio} removido"}
+
+#CRUD de cadastro (registros_gestor)
+
+def _buscar_registro(id_registro: int) -> dict | None:
+    rows = query(
+        """
+        SELECT id_registro, id_municipio, status, prioridade, observacao, responsavel, data_registro
+        FROM registros_gestor WHERE id_registro = ?
+        """,
+        (id_registro,),
+    )
+    return rows[0] if rows else None
+
+
+@router.post("/municipios/{id_municipio}/registros", response_model=RegistroGestor, status_code=201)
+def criar_registro(id_municipio: int, dados: RegistroGestorCreate):
+    if not query("SELECT id_municipio FROM municipios WHERE id_municipio = ?", (id_municipio,)):
+        raise HTTPException(status_code=404, detail="Município não encontrado")
+
+    novo_id = _execute(
+        """
+        INSERT INTO registros_gestor (id_municipio, status, prioridade, observacao, responsavel)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (id_municipio, dados.status, dados.prioridade, dados.observacao, dados.responsavel),
+    )
+    return _buscar_registro(novo_id)
+
+
+@router.get("/municipios/{id_municipio}/registros", response_model=list[RegistroGestor])
+def listar_registros(id_municipio: int):
+    if not query("SELECT id_municipio FROM municipios WHERE id_municipio = ?", (id_municipio,)):
+        raise HTTPException(status_code=404, detail="Município não encontrado")
+
+    return query(
+        """
+        SELECT id_registro, id_municipio, status, prioridade, observacao, responsavel, data_registro
+        FROM registros_gestor WHERE id_municipio = ? ORDER BY data_registro DESC
+        """,
+        (id_municipio,),
+    )
+
+
+@router.put("/registros/{id_registro}", response_model=RegistroGestor)
+def atualizar_registro(id_registro: int, dados: RegistroGestorUpdate):
+    atual = _buscar_registro(id_registro)
+    if atual is None:
+        raise HTTPException(status_code=404, detail="Registro não encontrado")
+
+    _execute(
+        """
+        UPDATE registros_gestor
+        SET status = ?, prioridade = ?, observacao = ?, responsavel = ?
+        WHERE id_registro = ?
+        """,
+        (
+            dados.status if dados.status is not None else atual["status"],
+            dados.prioridade if dados.prioridade is not None else atual["prioridade"],
+            dados.observacao if dados.observacao is not None else atual["observacao"],
+            dados.responsavel if dados.responsavel is not None else atual["responsavel"],
+            id_registro,
+        ),
+    )
+    return _buscar_registro(id_registro)
+
+
+@router.delete("/registros/{id_registro}")
+def remover_registro(id_registro: int):
+    if _buscar_registro(id_registro) is None:
+        raise HTTPException(status_code=404, detail="Registro não encontrado")
+
+    _execute("DELETE FROM registros_gestor WHERE id_registro = ?", (id_registro,))
+    return {"status": "ok", "mensagem": f"Registro {id_registro} removido"}
