@@ -1,0 +1,27 @@
+# Ambiente virtual
+.venv/
+venv/
+
+# Variáveis de ambiente e segredos
+.env
+.env.*
+!.env.example
+
+# Banco vetorial local
+chroma_data/
+
+# Cache Python
+__pycache__/
+*.py[cod]
+
+# Cache de ferramentas
+.pytest_cache/
+.mypy_cache/
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
