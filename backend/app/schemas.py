@@ -14,12 +14,12 @@ class Regiao(BaseModel):
     sigla_regiao: str
     nome_regiao: str
 
-class Municipio(BaseModel):
+class LPMunicipio(BaseModel):
     id_municipio: int
     nome_municipio: str
     id_uf:int
 
-class Estado(BaseModel):
+class LPEstado(BaseModel):
     id_uf: int
     sigla_uf: str
     nome_uf: str
@@ -34,7 +34,7 @@ class Populacao_Municipal(BaseModel):
     fonte: str
 
 
-class ResumoEstatistico(BaseModel):
+class LPResumoEstatistico(BaseModel):
     total_municipios: int
     total_estados: int
     populacao_total: float
@@ -43,29 +43,32 @@ class ResumoEstatistico(BaseModel):
     uf_municipio_mais_populoso: str
     populacao_municipio_mais_populoso: float
 
-class MunicipioPopulacao(BaseModel):
+class LPMunicipioPopulacao(BaseModel):
     nome_municipio: str
     sigla_uf: str
     valor: float
 
-class PopulacaoPorRegiao(BaseModel):
+class LPPopulacaoPorRegiao(BaseModel):
     nome_regiao: str
     populacao: float
 
-class PopulacaoPorEstado(BaseModel):
+class LPPopulacaoPorEstado(BaseModel):
     nome_uf: str
     sigla_uf: str
     populacao: float
 
-class DispersaoEstado(BaseModel):
+class LPDispersaoEstado(BaseModel):
     nome_uf: str
     sigla_uf: str
     nome_regiao: str
     qtd_municipios: int
     populacao_media: float
 
-class HeatmapRegiaoPorte(BaseModel):
+class LPHeatmapRegiaoPorte(BaseModel):
     nome_regiao: str
+    porte: str
+    quantidade: int
+
 class Municipio(BaseModel):
     id_municipio: int = 0
     nome_municipio: str
@@ -138,35 +141,35 @@ class RegiaoPorte(BaseModel):
     quantidade: int
 
 
-class MunicipioCreate(BaseModel):
+class LPMunicipioCreate(BaseModel):
     nome_municipio: str
     id_uf: int
     populacao: float
 
-class MunicipioUpdate(BaseModel):
+class LPMunicipioUpdate(BaseModel):
     nome_municipio: str | None = None
     id_uf: int | None = None
     populacao: float | None = None
 
-class MunicipioComPopulacao(BaseModel):
+class LPMunicipioComPopulacao(BaseModel):
     id_municipio: int
     nome_municipio: str
     id_uf: int
     populacao: float
 
-class RegistroGestorCreate(BaseModel):
+class LPRegistroGestorCreate(BaseModel):
     status: str | None = None
     prioridade: str | None = None
     observacao: str | None = None
     responsavel: str | None = None
 
-class RegistroGestorUpdate(BaseModel):
+class LPRegistroGestorUpdate(BaseModel):
     status: str | None = None
     prioridade: str | None = None
     observacao: str | None = None
     responsavel: str | None = None
 
-class RegistroGestor(BaseModel):
+class LPRegistroGestor(BaseModel):
     id_registro: int
     id_municipio: int
     status: str | None
