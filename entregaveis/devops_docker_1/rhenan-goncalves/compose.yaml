@@ -1,0 +1,13 @@
+services:
+  front:
+    build: ./
+    ports:
+      - "8501:8501"
+
+  back: 
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+          - ./backend/database.db:/app/database.db
+
