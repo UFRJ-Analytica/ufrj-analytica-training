@@ -23,5 +23,13 @@ services:
     depends_on:
       - backend
 
+  chromadb:
+    image: chromadb/chroma
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma_data:/data
+
 volumes:
   sqlite_data:
+  chroma_data:
