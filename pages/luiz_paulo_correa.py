@@ -1,10 +1,13 @@
+import os
+
 import requests
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# configuração 
-API_URL = "http://127.0.0.1:8000/luiz-paulo"
+# configuração
+BASE_URL = os.getenv("BASE_URL", "http://127.0.0.1:8000")
+API_URL = f"{BASE_URL}/luiz-paulo"
 PALETA_REGIOES = px.colors.qualitative.Set2
 ALTURA_GRAFICO = 400
 
