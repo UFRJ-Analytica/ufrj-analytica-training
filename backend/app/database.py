@@ -76,10 +76,20 @@ def get_connection() -> sqlite3.Connection:
 def query(sql: str, params: tuple = ()) -> list[dict]:
     """ Executa um SELECT e retorna uma lista de dicts """
     conn = get_connection()
+
     try:
         cursor = conn.execute(sql, params)
-        rows = cursor.fetchall()
-        return [dict(row) for row in rows]
+
+        if cursor.description is not None:
+            # SELECT
+            rows = cursor.fetchall()
+            return [dict(row) for row in rows]
+
+        else:
+            # INSERT, UPDATE ou DELETE
+            conn.commit()
+            return []
+
     finally:
         conn.close()
 
