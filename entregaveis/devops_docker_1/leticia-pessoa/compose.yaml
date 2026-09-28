@@ -1,0 +1,22 @@
+services:
+  backend:
+    build:
+      context: ../../..
+      dockerfile: entregaveis/devops_docker_1/leticia-pessoa/backend.Dockerfile
+    ports: ["8000:8000"]
+    volumes: ["./leticia.db:/database.db"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://' + 'localhost:8000/').read()"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+  frontend:
+    build:
+      context: ../../..
+      dockerfile: entregaveis/devops_docker_1/leticia-pessoa/Dockerfile
+    ports: ["8501:8501"]
+    depends_on:
+      backend:
+        condition: service_healthy
