@@ -7,7 +7,7 @@ st.title("Planejador de Viagens - Copa 2030")
 st.markdown("Assistente focado em logística internacional, roteiros e orçamentos para a Copa (Espanha, Marrocos e Portugal).")
 
 #URL do endpoint 
-API_URL = "http://127.0.0.1:8000/agent/lucas-brandao-agent/chat"
+API_URL = "http://backend:8000/agent/lucas-brandao-agent/chat"
 
 #Inicializa o histórico da conversa 
 if "messages" not in st.session_state:
