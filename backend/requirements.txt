@@ -2,7 +2,6 @@ altair==6.2.2
 annotated-doc==0.0.4
 annotated-types==0.8.0
 anyio==4.14.2
-chromadb>=0.6.3,<1.0.0
 attrs==26.1.0
 blinker==1.9.0
 certifi==2026.7.22
