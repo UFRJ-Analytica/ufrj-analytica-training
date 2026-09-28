@@ -1,0 +1,26 @@
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes: 
+    # vai mapear o banco pro conateiner e garantir qur os dados alterados sejam salvos de vdd
+        - ./database.db:/app/database.db
+    healthcheck:
+    # vai validar se o serviço ta pronto 
+        test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+        interval: 10s
+        timeout: 5s
+        retries: 3

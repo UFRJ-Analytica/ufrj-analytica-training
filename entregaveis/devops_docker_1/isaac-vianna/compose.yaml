@@ -1,0 +1,45 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persistência: o SQLite vive no host, então os dados sobrevivem ao container
+      - ./database.db:/code/database.db
+    networks:
+      - analytica
+    healthcheck:
+      # A imagem é slim e não tem curl; urllib já vem no Python
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/docs')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      # "backend" é o nome do serviço, resolvido pelo DNS da rede do Compose
+      BASE_URL: http://backend:8000
+    depends_on:
+      backend:
+        # Espera a API responder de fato, não só o container iniciar
+        condition: service_healthy
+    networks:
+      - analytica
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+networks:
+  analytica:
+    driver: bridge
