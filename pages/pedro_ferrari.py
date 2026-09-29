@@ -3,9 +3,12 @@ import requests
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import os 
 
-
-API_URL = "http://127.0.0.1:8000/pedro-ferrari"
+API_URL = os.getenv(
+    "API_URL",
+    "http://127.0.0.1:8000/pedro-ferrari"
+)
 
 st.set_page_config(page_title="Acompanhamento Populacional", layout="wide")
 

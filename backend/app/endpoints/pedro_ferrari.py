@@ -1,7 +1,43 @@
 from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel
 
 from app.database import get_connection, query
-from app.schemas import Regiao, Municipio, Registro, MunicipioOut, RegistroOut, Estado
+from app.schemas import Regiao, Estado
+
+
+class Municipio(BaseModel):
+    nome_municipio: str
+    id_uf: int
+    populacao_inicial: int
+
+
+class MunicipioOut(BaseModel):
+    id_municipio: int
+    nome_municipio: str
+    id_uf: int
+
+    sigla_uf: str | None = None
+    nome_uf: str | None = None
+    id_regiao: int | None = None
+    nome_regiao: str | None = None
+    populacao: int | None = None
+    ano: int | None = None
+
+
+class Registro(BaseModel):
+    status: str
+    prioridade: str
+    observacao: str
+    responsavel: str
+
+
+class RegistroOut(BaseModel):
+    id_registro: int
+    id_municipio: int
+    status: str
+    prioridade: str
+    observacao: str | None = None
+    responsavel: str | None = None
 
 ANO_REF = 2025
 
