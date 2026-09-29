@@ -3,9 +3,11 @@ import streamlit as st
 import requests
 import plotly.express as px
 import plotly.graph_objects as go
+import os
 
 def request(endpoint, method="GET", p=None, body=None):
-    resposta = requests.request(url=f"http://127.0.0.1:8000/julio_machado{endpoint}",
+    api_url = os.getenv("API_URL", "127.0.0.1:8000")
+    resposta = requests.request(url=f"http://{api_url}/julio_machado{endpoint}",
                                 params=p, method=method, json=body)
     if resposta.status_code == 200:
         dados = resposta.json()

@@ -1,22 +1,20 @@
 services:
-    backend:
-        build: ./backend/
-        ports:
-            - 8000:8000
-        expose:
-            - 8000
-    frontend:
-        build: .
-        ports:
-            - 8501:8501
-        expose:
-            - 8501
-    chromadb:
-        image: chromadb/chroma:1.5.9
-        ports:
-            - "8001:8000"
-        volumes:
-            - chroma_data:/data
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./database.db:/app/database.db
 
-volumes:
-    chroma_data:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://backend:8000/pedro-ferrari
+    depends_on:
+      - backend

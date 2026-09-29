@@ -1,21 +1,11 @@
-import os
 import sqlite3
 from typing import Optional, List
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel
 
+from app.database import DB_PATH
+
 router = APIRouter(prefix="/pedro-tonelli", tags=["pedro_tonelli"])
-
-def find_database():
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    while current_dir != os.path.dirname(current_dir):
-        possible_path = os.path.join(current_dir, "database.db")
-        if os.path.exists(possible_path):
-            return possible_path
-        current_dir = os.path.dirname(current_dir)
-    return "database.db"
-
-DB_PATH = find_database()
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)

@@ -1,0 +1,5 @@
+.git
+backend
+entregaveis
+__pycache__
+*.db
