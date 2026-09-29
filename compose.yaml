@@ -11,3 +11,12 @@ services:
             - 8501:8501
         expose:
             - 8501
+    chromadb:
+        image: chromadb/chroma:1.5.9
+        ports:
+            - "8001:8000"
+        volumes:
+            - chroma_data:/data
+
+volumes:
+    chroma_data:
