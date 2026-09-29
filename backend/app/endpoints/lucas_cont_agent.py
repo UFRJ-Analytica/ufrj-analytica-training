@@ -6,10 +6,10 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from app.agents.luiz_conti_agent import responder_agente
+from app.agents.lucas_cont_agent import responder_agente
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/agent/luiz-conti", tags=["Luiz Conti - Agente"])
+router = APIRouter(prefix="/agent/lucas-cont", tags=["Lucas Cont - Agente"])
 
 
 class ChatMessage(BaseModel):

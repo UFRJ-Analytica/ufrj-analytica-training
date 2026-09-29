@@ -1,10 +1,10 @@
-"""Indicadores populacionais específicos do painel do Luiz Conti."""
+"""Indicadores populacionais específicos do painel do Lucas Cont."""
 
 from fastapi import APIRouter, Query
 
 from app.database import query
 
-router = APIRouter(prefix="/luiz-conti", tags=["Luiz Conti - População"])
+router = APIRouter(prefix="/lucas-cont", tags=["Lucas Cont - População"])
 
 
 @router.get("/status")

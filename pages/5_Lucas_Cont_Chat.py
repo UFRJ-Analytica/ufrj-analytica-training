@@ -8,10 +8,10 @@ import streamlit as st
 
 
 API_URL = os.getenv(
-    "LUIZ_CONTI_AGENT_URL",
-    "http://127.0.0.1:8000/agent/luiz-conti/chat",
+    "LUCAS_CONT_AGENT_URL",
+    "http://127.0.0.1:8000/agent/lucas-cont/chat",
 )
-STATE_KEY = "luiz_conti_chat"
+STATE_KEY = "lucas_cont_chat"
 
 st.set_page_config(page_title="Tutor de dados", page_icon=":speech_balloon:", layout="centered")
 st.title("Tutor de análise de dados")

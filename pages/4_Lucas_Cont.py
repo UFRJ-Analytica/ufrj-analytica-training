@@ -1,4 +1,4 @@
-"""Painel Streamlit do Luiz Conti."""
+"""Painel Streamlit do Lucas Cont."""
 
 import os
 
@@ -8,7 +8,7 @@ import requests
 import streamlit as st
 
 
-API_URL = os.getenv("LUIZ_CONTI_API_URL", "http://127.0.0.1:8000/luiz-conti")
+API_URL = os.getenv("LUCAS_CONT_API_URL", "http://127.0.0.1:8000/lucas-cont")
 st.set_page_config(page_title="Painel populacional", page_icon=":bar_chart:", layout="wide")
 st.title("Painel populacional")
 st.caption("Indicadores derivados do banco normalizado do IBGE.")
