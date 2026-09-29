@@ -4,10 +4,11 @@ import pandas as pd
 import requests
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
 st.set_page_config(layout="wide")
 
-base_url = "http://127.0.0.1:8000/marcelo-borges"
+base_url = os.getenv("BACKEND_URL", "http://127.0.0.1:8000") + "/marcelo-borges"
 
 # ===================
 # kpi: medidas resumo
@@ -88,7 +89,7 @@ dispersao_df = pd.DataFrame(dispersao)
 # retirar o distrito federal, outlier
 dispersao_df = dispersao_df[dispersao_df["media"]<1000000]
 dispersao_df = dispersao_df.set_index("nome")
-print(dispersao_df)
+# print(dispersao_df)
 fig4, ax4 = plt.subplots()
 sns.scatterplot(data=dispersao_df, x="media", y="quant", palette="tab10", hue="id_regiao")
 ax4.set_xlabel("Média")
@@ -106,7 +107,7 @@ st.header("Mapa de calor Região x Porte")
 regiao_porte = requests.get(f"{base_url}/populacao/heatmap-regiao-porte").json()
 regiao_porte_df = pd.DataFrame(regiao_porte)
 heatmap_df = regiao_porte_df.set_index("nome_regiao")
-print(heatmap_df)
+# print(heatmap_df)
 fig3, ax3 = plt.subplots()
 sns.heatmap(
     heatmap_df,
@@ -126,7 +127,7 @@ st.divider()
 st.header("Gerenciar Municípios")
 @st.dialog("Criar Município")
 def modal_criar():
-    with st.form("form_criar", clear_on_submit=True):
+    with st.form("criar_municipio", clear_on_submit=True):
         nome = st.text_input("Nome do Município *")
         estado = st.text_input("Estado a que o Município pertence *")
         populacao = st.text_input("Populacao do Município *")
@@ -139,7 +140,7 @@ def modal_criar():
 
 @st.dialog("Atualizar Município")
 def modal_atualizar():
-    with st.form("form_atualizar", clear_on_submit=True):
+    with st.form("atualizar_municipio", clear_on_submit=True):
         id = st.text_input("ID do Município a ser atualizado *")
         nome = st.text_input("Nome do Município")
         estado = st.text_input("Estado a que o Município pertence")
@@ -158,14 +159,14 @@ def modal_atualizar():
 
 @st.dialog("Deletar Município")
 def modal_deletar():
-    with st.form("form_criar", clear_on_submit=True):
+    with st.form("deletar_municipio", clear_on_submit=True):
         id_municipio = st.text_input("ID do Município a ser deletado")
         if st.form_submit_button("Deletar"):
             response = requests.delete(f"{base_url}/municipios/{id_municipio}")
             if response.status_code == 200:
-                print("Município deletado com sucesso!")
+                st.success("Município deletado com sucesso!")
             else:
-                print("Erro ao deletar Município.")
+                st.error("Erro ao deletar Município.")
 _,a,b,c,_ = st.columns(5)
 with a:
     if st.button("Adicionar Município", type="primary"):
@@ -185,7 +186,7 @@ st.header("Gerenciar Cadastros sobre Municípios")
 cadastros = None
 _,a,_ = st.columns([0.5,2,0.5])
 with a:
-    with st.form("form_criar", clear_on_submit=True):
+    with st.form("buscar_cadastro", clear_on_submit=True):
         id_municipio = st.text_input("Buscar Registros por ID do município")
         if st.form_submit_button("Buscar"):
             cadastros = requests.get(f"{base_url}/municipios/{id_municipio}/registros").json()
@@ -194,20 +195,20 @@ with a:
 
 @st.dialog("Criar Cadastro")
 def modal_criar_cadastro():
-    with st.form("form_criar", clear_on_submit=True):
+    with st.form("criar_cadastro", clear_on_submit=True):
         id = st.text_input("ID do Município *")
         obs = st.text_input("Observação sobre o Registro *")
         resp = st.text_input("Responsável pelo Registro *")
         if st.form_submit_button("Criar"):
             response = requests.post(f"{base_url}/municipios/{id}/registros", params={"obs":obs,"responsavel":resp})
-            if response.status_code == 201:
+            if response.status_code == 200:
                 st.success("Registro adicionado com sucesso!")
             else:
                 st.error("Erro. Tente Novamente.")
 
 @st.dialog("Atualizar Cadastro")
 def modal_atualizar_cadastro():
-    with st.form("form_atualizar", clear_on_submit=True):
+    with st.form("atualizar_cadastro", clear_on_submit=True):
         id = st.text_input("ID do Registro *")
         obs = st.text_input("Obs do Registro")
         resp = st.text_input("Novo Responsável pelo Registro")
@@ -224,14 +225,14 @@ def modal_atualizar_cadastro():
 
 @st.dialog("Deletar Cadastro")
 def modal_deletar_cadastro():
-    with st.form("form_criar", clear_on_submit=True):
+    with st.form("deletar_cadastro", clear_on_submit=True):
         id_registro = st.text_input("ID do Registro a ser deletado")
         if st.form_submit_button("Deletar"):
             response = requests.delete(f"{base_url}/registros/{id_registro}")
             if response.status_code == 200:
-                print("Registro deletado com sucesso!")
+                st.success("Registro deletado com sucesso!")
             else:
-                print("Erro ao deletar Município.")
+                st.error("Erro ao deletar Município.")
 _,a,b,c,_ = st.columns(5)
 with a:
     if st.button("Adicionar Cadastro", type="primary"):

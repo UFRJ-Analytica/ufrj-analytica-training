@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 from app.database import get_connection, query
-from app.schemas import Regiao, Estado
+from app.schemas import Regiao
 
 
 class Municipio(BaseModel):
@@ -30,6 +30,11 @@ class Registro(BaseModel):
     observacao: str
     responsavel: str
 
+class Estado(BaseModel):
+    id_uf: int
+    sigla_uf: str
+    nome_uf: str
+    id_regiao: int
 
 class RegistroOut(BaseModel):
     id_registro: int
