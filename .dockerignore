@@ -1,0 +1,20 @@
+# Controle de versão e ambientes virtuais
+.git
+.gitignore
+.venv
+venv
+
+# Cache do Python
+__pycache__
+*.pyc
+
+# Segredos (nunca entram na imagem)
+.env
+**/.env
+
+# Não pertencem às imagens (atividades de outros trainees e documentação)
+entregaveis/
+*.md
+
+# Regra: SEM exclusões de backend/ (o backend copia backend/ inteiro
+# e o frontend copia apenas backend/dados via Dockerfile)

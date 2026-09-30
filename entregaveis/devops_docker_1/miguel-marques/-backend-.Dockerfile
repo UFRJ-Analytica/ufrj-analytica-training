@@ -1,13 +1,13 @@
-FROM python:3.12-slim
+ARG PYTHON_VERSION=3.14
+FROM python:${PYTHON_VERSION}-slim
 
 WORKDIR /app
 
 COPY backend/requirements.txt ./backend/requirements.txt
-
 RUN pip install --no-cache-dir -r backend/requirements.txt
 
+
 COPY backend ./backend
-COPY database.db ./database.db
 
 EXPOSE 8000
 
