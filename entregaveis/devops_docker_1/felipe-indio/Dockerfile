@@ -14,7 +14,6 @@ COPY app.py .
 COPY pages ./pages/
 COPY data ./data/
 
-
 # instalar as dependências do frontend;
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
