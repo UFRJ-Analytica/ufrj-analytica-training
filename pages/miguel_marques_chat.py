@@ -1,4 +1,4 @@
-import html                                                        # NOVO
+import html                                                        
 import os
 
 import requests
@@ -10,10 +10,7 @@ ENDPOINT = f"{BASE_URL}/agent/miguel-marques-agent/chat"
 st.title("Agente Docker")
 st.caption("Tire dúvidas sobre Docker, Dockerfile e Docker Compose.")
 
-# NOVO: estilo dos balões.
-# .linha-user / .balao-user -> mensagem do usuário, alinhada à direita, em azul.
-# st-key-bot_*              -> contêineres do agente (criados com key="bot_N"), à esquerda.
-# O fundo do agente é um cinza translúcido para funcionar em tema claro e escuro.
+
 st.markdown(
     """
     <style>
@@ -64,20 +61,17 @@ def desenhar(indice: int, role: str, conteudo: str) -> None:       # NOVO
             unsafe_allow_html=True,
         )
     else:
-        # key="bot_N" faz o Streamlit marcar o contêiner com a classe st-key-bot_N,
-        # que o CSS acima usa para estilizar o balão do agente
+
         with st.container(key=f"bot_{indice}"):
             st.markdown(conteudo)
 
 
-# NOVO: caixa de altura fixa (500 px) com scroll interno
 caixa = st.container(height=500)
 
 with caixa:
     for i, m in enumerate(st.session_state.mensagens):
         desenhar(i, m["role"], m["content"])
 
-# Fora da caixa: o st.chat_input fica fixo na parte de baixo da página
 pergunta = st.chat_input("Digite sua mensagem...")
 
 if pergunta:

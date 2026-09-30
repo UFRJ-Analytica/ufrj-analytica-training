@@ -11,10 +11,8 @@ from langgraph.graph import START, StateGraph
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
 
-# Lê o backend/.env (este arquivo está em backend/app/agents/, então subimos 2 pastas)
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
-# 1) SYSTEM PROMPT: quem é o agente e como deve responder
 SYSTEM_PROMPT = """Você é o Agente Docker, assistente especializado em Docker,
 Dockerfile e Docker Compose. Responda sempre em português do Brasil, de forma clara,
 objetiva e didática. Se a pergunta não for sobre Docker, diga educadamente que
@@ -23,12 +21,10 @@ Quando o usuário perguntar sobre um comando Docker específico, use a ferrament
 buscar_comando e baseie a resposta no resultado dela."""
 
 
-# 2) STATE: o "caderno" do agente (add_messages acrescenta em vez de sobrescrever)
 class AgentState(TypedDict):
     messages: Annotated[list[AnyMessage], add_messages]
 
 
-# 3) FERRAMENTA: função comum que o modelo pode pedir para executar
 COMANDOS = {
     "build": "docker build -t <nome> .  -> cria uma imagem a partir do Dockerfile da pasta atual.",
     "run": "docker run -d -p <host>:<container> --name <nome> <imagem>  -> cria e inicia um container.",
@@ -57,12 +53,10 @@ def buscar_comando(comando: str) -> str:
 TOOLS = [buscar_comando]
 
 
-# 4) MODELO: criado uma única vez (cache) e só quando for usado
 @lru_cache(maxsize=1)
 def _modelo() -> ChatOpenAI:
     chave = os.getenv("OPENROUTER_API_KEY")
     nome = os.getenv("OPENROUTER_MODEL")
-    # Validação: diz exatamente o que falta no backend/.env
     faltando = [n for n, v in (("OPENROUTER_API_KEY", chave), ("OPENROUTER_MODEL", nome)) if not v]
     if faltando:
         raise RuntimeError(f"Variáveis ausentes em backend/.env: {', '.join(faltando)}")
@@ -70,14 +64,13 @@ def _modelo() -> ChatOpenAI:
         model=nome,
         api_key=chave,
         base_url="https://openrouter.ai/api/v1",
-        temperature=0.2,     # baixo = respostas mais estáveis e técnicas
+        temperature=0.2,     
         max_completion_tokens=2048,     # limite do tamanho da resposta
-        max_retries=5,       # repete em erros temporários (como o 429)
+        max_retries=5,       # repete em erros temporários
         timeout=60,          # desiste de uma tentativa após 60 segundos
     )
 
 
-# 5) NÓ DO AGENTE: chama o modelo, que conhece as ferramentas via bind_tools
 def no_agente(state: AgentState) -> dict:
     resposta = _modelo().bind_tools(TOOLS).invoke(
         [SystemMessage(content=SYSTEM_PROMPT), *state["messages"]]
@@ -85,17 +78,15 @@ def no_agente(state: AgentState) -> dict:
     return {"messages": [resposta]}
 
 
-# 6) GRAFO: ciclo agente <-> ferramentas
 _g = StateGraph(AgentState)
 _g.add_node("agente", no_agente)
 _g.add_node("tools", ToolNode(TOOLS))
 _g.add_edge(START, "agente")
-_g.add_conditional_edges("agente", tools_condition)   # pediu tool? vai p/ "tools", senão termina
-_g.add_edge("tools", "agente")                        # resultado da tool volta ao modelo
+_g.add_conditional_edges("agente", tools_condition)   
+_g.add_edge("tools", "agente")                        
 grafo = _g.compile()
 
 
-# 7) Converte o conteúdo da resposta em texto (pode vir como str ou lista de blocos)
 def _texto(conteudo) -> str:
     if isinstance(conteudo, str):
         return conteudo.strip()
@@ -104,7 +95,6 @@ def _texto(conteudo) -> str:
     ).strip()
 
 
-# 8) FUNÇÃO DE ENTRADA: o que o endpoint vai chamar
 def executar_agente(mensagem: str) -> str:
     resultado = grafo.invoke({"messages": [HumanMessage(content=mensagem)]})
     return _texto(resultado["messages"][-1].content) or "O modelo não retornou texto. Tente novamente."
