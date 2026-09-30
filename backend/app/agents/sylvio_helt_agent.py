@@ -32,7 +32,7 @@ Regras:
 """.strip()
 
 MODEL_CONFIG = {
-    "model": os.getenv("SYLVIO_HELT_MODEL", "gemini-3.8-flash"),
+    "model": os.getenv("SYLVIO_HELT_MODEL", "gemini-3.5-flash-lite"),
     "temperature": 0.3,
     "max_output_tokens": 1024,
 }
