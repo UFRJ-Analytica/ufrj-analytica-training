@@ -1,0 +1,29 @@
+services:
+    backend:
+        build:
+            context: ../../../backend
+            dockerfile: ../entregaveis/devops_docker_1/luiz-conti/backend.Dockerfile
+        ports:
+            - "8000:8000"
+            - "8501:8501"
+        volumes:
+            - type: bind
+              source: ../../banco_de_dados/luiz_conti_trainee
+              target: /data
+              bind:
+                  create_host_path: false
+        healthcheck:
+            test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/docs')"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 10s
+
+    frontend:
+        build:
+            context: ../../..
+            dockerfile: entregaveis/devops_docker_1/luiz-conti/Dockerfile
+        network_mode: "service:backend"
+        depends_on:
+            backend:
+                condition: service_healthy
