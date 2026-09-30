@@ -13,7 +13,6 @@ COPY requirements.txt .
 COPY app.py .
 COPY pages ./pages/
 COPY data ./data/
-COPY backend/dados/grandes_regioes_json.geojson ./backend/dados/grandes_regioes_json.geojson
 
 
 # instalar as dependências do frontend;

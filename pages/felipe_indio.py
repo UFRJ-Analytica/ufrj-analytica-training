@@ -6,7 +6,7 @@ import plotly.express as px
 st.set_page_config(page_title="Gestão Populacional", layout="wide")
 st.title("📊 Painel de Acompanhamento Populacional")
 
-API_URL = "http://127.0.0.1:8000/felipe-indio"
+API_URL = "http://backend:8000/felipe-indio"
 
 def fetch_data(endpoint, params=None):
     try:
