@@ -3,12 +3,6 @@ FROM python:3.12-slim
 WORKDIR /app
 
 COPY requirements.txt .
-<<<<<<< HEAD
-COPY app.py .
-COPY pages ./pages/
-COPY data ./data/
-=======
->>>>>>> develop
 
 RUN pip install --no-cache-dir -r requirements.txt
 
