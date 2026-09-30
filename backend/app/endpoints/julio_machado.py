@@ -214,9 +214,9 @@ def populacao_por_uf(id_regiao: int | None = Query(default=None)):
 def distribuicao_populacional():
     rows = query("""
                 SELECT
-	                SUM(IF(r2.valor < 100000, 1, 0)) AS PEQUENO,
+	                COUNT(r2.valor) FILTER(WHERE r2.valor < 100000) AS PEQUENO,
 	                COUNT(CASE WHEN r2.valor >= 100000 AND valor < 500000 THEN 1 END) AS MEDIO,
-	                COUNT(r2.valor) FILTER(WHERE valor >= 500000) AS GRANDE
+	                COUNT(r2.valor) FILTER(WHERE r2.valor >= 500000) AS GRANDE
                 FROM municipios m 
                 INNER JOIN recenseamento r2 
 	                ON m.id_municipio = r2.id_municipio AND r2.id_censo = 1
@@ -250,7 +250,7 @@ def heatmap_regiao_porte():
     rows = query("""
                 SELECT
                     r.id_regiao, r.nome_regiao,
-	                SUM(IF(r2.valor < 100000, 1, 0)) AS PEQUENO,
+	                COUNT(r2.valor) FILTER(WHERE r2.valor <100000) AS PEQUENO,
 	                COUNT(CASE WHEN r2.valor >= 100000 AND r2.valor < 500000 THEN 1 END) AS MEDIO,
 	                COUNT(r2.valor) FILTER(WHERE r2.valor >= 500000) AS GRANDE,
                     COUNT(m.id_municipio) AS total_municipios

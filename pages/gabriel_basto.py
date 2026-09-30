@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.express as px
 
 
-URL_BACKEND = "http://127.0.0.1:8000/gabriel-basto"
+URL_BACKEND = "http://backend:8000/gabriel-basto"
 
 st.set_page_config(page_title="Indicadores Demográficos", layout="wide", initial_sidebar_state="expanded")
 st.title("🗺️ Painel de Indicadores Demográficos | IBGE 2025")

@@ -1,24 +1,15 @@
-# utilizar uma imagem base adequada;
+FROM python:3.12-slim
 
-ARG PYTHON_VERSION=3.14
-FROM python:${PYTHON_VERSION}-slim
+WORKDIR /app
 
+COPY backend/requirements.txt ./backend/requirements.txt
 
-# definir o diretório de trabalho;
-WORKDIR /workdir
+WORKDIR /workdir/backend
+RUN pip install --no-cache-dir -r backend/requirements.txt
 
-# copiar os arquivos necessários;
-COPY . .
+COPY backend ./backend
+COPY database.db ./database.db
 
-# instalar as dependências do backend;
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
-
-ENV PATH       "${PATH}:/workdir/app"
-ENV PYTHONPATH "${PYTHONPATH}:/workdir/app"
-
-# expor a porta da aplicação;
 EXPOSE 8000
 
-# executar o FastAPI com Uvicorn.
-ENTRYPOINT ["python3", "-m", "uvicorn", "app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "-m", "uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8000"]

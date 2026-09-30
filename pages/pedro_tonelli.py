@@ -3,7 +3,7 @@ import requests
 import pandas as pd
 import plotly.express as px
 
-API_BASE_URL = "http://127.0.0.1:8000/pedro-tonelli"
+API_BASE_URL = "http://backend:8000/pedro-tonelli"
 
 st.set_page_config(page_title="Painel Populacional - Pedro Tonelli", layout="wide")
 st.title("📊 Sistema de Acompanhamento Populacional (IBGE)")
