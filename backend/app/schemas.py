@@ -129,3 +129,69 @@ class Acompanhamento(BaseModel):
     observacao: Optional[str] = None
     responsavel: Optional[str] = None
     atualizado_em: Optional[str] = None
+
+    # ---------------------------------------------------------------------------
+# Compatibilidade com a API da Leticia Pessoa
+# ---------------------------------------------------------------------------
+
+class KpiResponse(BaseModel):
+    total_municipios: int
+    total_estados: int
+    populacao_total: int
+    ano_referencia: int
+    municipio_mais_populoso: str
+
+
+class TopMunicipio(BaseModel):
+    nome: str
+    populacao: int
+
+
+class PopulacaoPorRegiao(BaseModel):
+    regiao: str
+    populacao: int
+
+
+class PopulacaoPorEstado(BaseModel):
+    regiao: str
+    estado: str
+    populacao: int
+
+
+class DispersaoMunicipioEstado(BaseModel):
+    regiao: str
+    estado: str
+    quantidade_municipios: int
+    populacao_media: float
+
+
+class MunicipioResponse(BaseModel):
+    id_municipio: int
+    nome_municipio: str
+    id_uf: int
+    populacao: int
+
+
+class CadastroCreate(BaseModel):
+    id_municipio: int
+    status: str | None = None
+    prioridade: str | None = None
+    observacao: str | None = None
+    responsavel: str | None = None
+
+
+class CadastroUpdate(BaseModel):
+    status: str | None = None
+    prioridade: str | None = None
+    observacao: str | None = None
+    responsavel: str | None = None
+
+
+class CadastroResponse(BaseModel):
+    id_cadastro: int
+    id_municipio: int
+    status: str | None
+    prioridade: str | None
+    observacao: str | None
+    responsavel: str | None
+    data_criacao: str | None
