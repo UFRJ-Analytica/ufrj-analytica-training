@@ -1,0 +1,65 @@
+Nome: Elden Ring
+Gênero: RPG de ação
+Plataformas: PC, PlayStation, Xbox
+Características: mundo aberto, exploração, combate difícil, fantasia sombria.
+Perfil indicado: jogadores que gostam de desafio, exploração livre e criação de builds.
+Multiplayer: possui recursos online e cooperativos.
+
+---
+
+Nome: The Witcher 3
+Gênero: RPG de ação
+Plataformas: PC, PlayStation, Xbox, Switch
+Características: mundo aberto, narrativa forte, missões, exploração e decisões.
+Perfil indicado: jogadores que valorizam história, personagens e escolhas durante a campanha.
+Foco principal: experiência single-player narrativa.
+
+---
+
+Nome: Stardew Valley
+Gênero: simulação
+Plataformas: PC, PlayStation, Xbox, Switch, Mobile
+Características: fazenda, pesca, mineração, relacionamentos e exploração.
+Perfil indicado: jogadores que procuram uma experiência tranquila e progressiva.
+Estilo: pode ser jogado de maneira casual e possui multiplayer.
+
+---
+
+Nome: Hades
+Gênero: roguelike de ação
+Plataformas: PC, PlayStation, Xbox, Switch
+Características: combates rápidos, progressão entre tentativas e narrativa integrada ao gameplay.
+Perfil indicado: jogadores que gostam de ação rápida e partidas repetidas com evolução.
+
+---
+
+Nome: Minecraft
+Gênero: sandbox e sobrevivência
+Plataformas: PC, PlayStation, Xbox, Switch, Mobile
+Características: construção, exploração, sobrevivência e criatividade.
+Perfil indicado: jogadores interessados em liberdade para criar e explorar.
+Multiplayer: pode ser jogado sozinho ou com outras pessoas.
+
+---
+
+Nome: Hollow Knight
+Gênero: metroidvania
+Plataformas: PC, PlayStation, Xbox, Switch
+Características: exploração, plataforma, combate e progressão por novas habilidades.
+Perfil indicado: jogadores que gostam de exploração e desafio.
+
+---
+
+Nome: Celeste
+Gênero: plataforma
+Plataformas: PC, PlayStation, Xbox, Switch
+Características: plataforma de precisão, fases desafiadoras e narrativa focada na personagem.
+Perfil indicado: jogadores que gostam de desafios mecânicos e progressão baseada em habilidade.
+
+---
+
+Nome: Baldur's Gate 3
+Gênero: RPG
+Plataformas: PC, PlayStation, Xbox
+Características: combate por turnos, escolhas, exploração e forte interação com personagens.
+Perfil indicado: jogadores que gostam de RPGs narrativos, estratégia e liberdade de decisão.
