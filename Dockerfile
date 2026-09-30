@@ -1,30 +1,22 @@
-# utilizar uma imagem base adequada;
+FROM python:3.12-slim
 
-ARG PYTHON_VERSION=3.14
-FROM python:${PYTHON_VERSION}-slim
+WORKDIR /app
 
-
-# definir o diretório de trabalho;
-WORKDIR /workdir
-
-# copiar os arquivos necessários;
-# (poderia ter sido usado um .dockerignore, mas achei essa forma mais simples e estável
 COPY requirements.txt .
+<<<<<<< HEAD
 COPY app.py .
 COPY pages ./pages/
 COPY data ./data/
+=======
+>>>>>>> develop
 
-
-# instalar as dependências do frontend;
-RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-ENV PATH       "${PATH}:/workdir/app"
-ENV PYTHONPATH "${PYTHONPATH}:/workdir/app"
+COPY app.py .
+COPY pages ./pages
+COPY data ./data
+COPY backend/dados ./backend/dados
 
-
-# expor a porta utilizada pela aplicação;
 EXPOSE 8501
 
-# iniciar corretamente o frontend
-ENTRYPOINT ["streamlit", "run", "app.py", "--server.port", "8501", "--browser.serverAddress", "0.0.0.0"]
+CMD ["streamlit", "run", "app.py", "--server.address=0.0.0.0", "--server.port=8501"]

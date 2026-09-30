@@ -17,7 +17,7 @@ BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
 FILE_PATH = os.path.join(BACKEND_DIR, "../../../data/copa_2030_info.txt")
 
 #Conecta ao ChromaDB no Docker
-chroma_client = chromadb.HttpClient(host="127.0.0.1", port=8001)
+chroma_client = chromadb.HttpClient(host="chromadb", port=8000)
 embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
 #Função para garantir que o banco recebe os dados

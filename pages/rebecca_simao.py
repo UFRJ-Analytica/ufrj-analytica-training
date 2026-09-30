@@ -4,14 +4,14 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import requests
-
+import os
 st.set_page_config(page_title="Painel Populacional",page_icon="📊",layout="wide")
 
 st.title("📊 Sistema para Análise Populacional")
 st.caption("Dashboard utilizando FastAPI + Streamlit")
 
 
-URL_API="http://127.0.0.1:8000/rebecca_simao"
+URL_API = os.getenv("API_URL", "http://127.0.0.1:8000") + "/rebecca_simao"
 
 
 def buscar(endpoint):
