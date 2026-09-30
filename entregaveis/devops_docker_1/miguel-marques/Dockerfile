@@ -1,11 +1,13 @@
-FROM python:3.12-slim
+ARG PYTHON_VERSION=3.14
+FROM python:${PYTHON_VERSION}-slim
 
+# diretório de trabalho
 WORKDIR /app
 
 COPY requirements.txt .
-
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copiar os arquivos necessários do frontend
 COPY app.py .
 COPY pages ./pages
 COPY data ./data

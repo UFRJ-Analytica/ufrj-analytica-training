@@ -7,6 +7,12 @@ services:
       - "8000:8000"
     volumes:
       - ./database.db:/app/database.db
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/docs')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
   frontend:
     build:
@@ -15,6 +21,13 @@ services:
     ports:
       - "8501:8501"
     environment:
-      - API_URL=http://backend:8000/pedro-ferrari
+      - API_URL=http://backend:8000/miguel_marques
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    healthcheck:
+          test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')"]
+          interval: 10s
+          timeout: 5s
+          retries: 5
+          start_period: 15s
