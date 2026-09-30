@@ -1,0 +1,23 @@
+JUROS COMPOSTOS
+
+Juros compostos são calculados sobre o capital acumulado. Em cada período, os juros obtidos anteriormente passam a fazer parte da base de cálculo dos juros seguintes. O montante pode ser calculado pela expressão M = C(1+i)^n, onde C é o capital inicial, i é a taxa por período e n é o número de períodos.
+
+
+INFLAÇÃO
+
+Inflação representa um aumento generalizado dos preços de bens e serviços. Quando os preços aumentam, uma mesma quantidade de dinheiro tende a comprar menos produtos e serviços, reduzindo seu poder de compra.
+
+
+DIVERSIFICAÇÃO
+
+Diversificação consiste em distribuir recursos entre diferentes ativos ou categorias de investimentos. Seu objetivo é reduzir a concentração de risco, evitando que todo o patrimônio dependa do desempenho de um único investimento.
+
+
+LIQUIDEZ
+
+Liquidez representa a facilidade com que um ativo pode ser convertido em dinheiro. Ativos com alta liquidez podem ser convertidos em dinheiro com maior facilidade, enquanto ativos com baixa liquidez podem exigir mais tempo ou condições específicas para sua venda.
+
+
+RISCO E RETORNO
+
+Retorno representa o ganho ou perda obtido em relação ao valor inicialmente aplicado. Risco está relacionado à incerteza sobre os resultados futuros de um investimento. A análise de investimentos normalmente considera retorno, risco, liquidez e horizonte de tempo.

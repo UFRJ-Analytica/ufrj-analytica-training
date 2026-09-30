@@ -1,0 +1,29 @@
+Pandas é uma biblioteca Python utilizada para análise e manipulação de dados.
+
+O principal objeto do Pandas para dados tabulares é o DataFrame. Um DataFrame organiza os dados em linhas e colunas e permite realizar operações de seleção, filtragem, transformação e análise.
+
+A função pandas.read_csv() é utilizada para carregar dados armazenados em arquivos CSV para um DataFrame.
+
+O método DataFrame.head() retorna as primeiras linhas de um DataFrame e pode ser utilizado para visualizar rapidamente a estrutura dos dados.
+
+O método DataFrame.describe() produz estatísticas descritivas das colunas numéricas, incluindo contagem, média, desvio padrão, valor mínimo, quartis e valor máximo.
+
+O método DataFrame.mean() calcula a média dos valores de uma coluna ou de outras estruturas numéricas.
+
+O método DataFrame.median() calcula a mediana dos valores.
+
+O método DataFrame.isna() identifica valores ausentes em um DataFrame.
+
+O método DataFrame.dropna() pode ser utilizado para remover linhas ou colunas que possuem valores ausentes.
+
+O método DataFrame.fillna() pode ser utilizado para substituir valores ausentes por um valor definido pelo usuário.
+
+A filtragem de dados em um DataFrame pode ser realizada utilizando condições booleanas. Por exemplo, df[df["idade"] > 18] seleciona as linhas em que a coluna idade possui valores maiores que 18.
+
+O método DataFrame.groupby() permite agrupar dados de acordo com uma ou mais colunas e realizar operações de agregação sobre os grupos.
+
+A função pandas.concat() pode ser utilizada para concatenar objetos do Pandas, como DataFrames.
+
+A função pandas.merge() permite combinar DataFrames utilizando uma ou mais colunas como chave.
+
+Em uma análise de dados, estatísticas descritivas, filtragem, agrupamento e visualização inicial são etapas importantes para compreender um conjunto de dados antes de realizar análises mais avançadas.
