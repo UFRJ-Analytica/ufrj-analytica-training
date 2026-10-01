@@ -1,0 +1,33 @@
+services:
+
+  backend:
+    build: ./backend/
+    ports:
+      - 8000:8000
+    volumes:
+      - ./database.db:/workdir/database.db
+    environment:
+      - DB_PATH=/workdir/database.db
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - chromadb
+
+  frontend:
+    build: .
+    ports:
+      - 8501:8501
+    depends_on:
+      - backend
+
+  chromadb:
+    image: chromadb/chroma
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma_data:/data
+
+volumes:
+  chroma_data:
