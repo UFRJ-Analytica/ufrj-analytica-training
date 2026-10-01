@@ -1,0 +1,20 @@
+services:
+    backend:
+        build: 
+            context: .
+            dockerfile: backend/backend.Dockerfile
+        ports:
+            - 8000:8000
+        volumes:
+            - ./database.db:/app/database.db
+
+        # configuracoes para permitir que o backend rode em modo interativo
+        # (alguem colocou pra inserir a api key do google da entrega de agentes)
+        stdin_open: true
+        tty: true
+
+    frontend:
+        build: .
+        network_mode: host
+        depends_on:
+            - backend
